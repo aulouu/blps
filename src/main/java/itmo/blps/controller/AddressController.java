@@ -20,8 +20,6 @@ public class AddressController {
         return addressService.getAllAddresses();
     }
 
-    // get by id
-
     @PostMapping("/create")
     public AddressResponse createAddress(@RequestBody @Valid AddressRequest addressRequest) {
         return addressService.createAddress(addressRequest);

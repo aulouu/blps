@@ -5,11 +5,14 @@ import itmo.blps.dto.auth.*;
 import itmo.blps.exceptions.*;
 import itmo.blps.model.User;
 import itmo.blps.security.jwt.JwtUtils;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Service
 @RequiredArgsConstructor
@@ -19,14 +22,13 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final OrderService orderService;
 
-    public AuthResponseDTO register(RegisterUserDTO registerUserDto) {
+    public AuthResponseDTO register(RegisterUserDTO registerUserDto, String sessionId) {
         if (userRepository.existsByUsername(registerUserDto.getUsername()))
             throw new UserAlreadyExistException(
                     String.format("Username %s already exists", registerUserDto.getUsername())
             );
-
-        long userCount = userRepository.count();
 
         User user = User
                 .builder()
@@ -35,15 +37,16 @@ public class AuthService {
                 .build();
 
         user = userRepository.save(user);
-
         String token = jwtUtils.generateJwtToken(user.getUsername());
+        orderService.mergeOrder(user.getId(), sessionId);
+
         return new AuthResponseDTO(
                 user.getUsername(),
                 token
         );
     }
 
-    public AuthResponseDTO login(LoginUserDTO loginUserDto) {
+    public AuthResponseDTO login(LoginUserDTO loginUserDto, String sessionId) {
         User user = userRepository.findByUsername(loginUserDto.getUsername())
                 .orElseThrow(() -> new UserNotFoundException(
                         String.format("Username %s not found", loginUserDto.getUsername())
@@ -54,10 +57,11 @@ public class AuthService {
         );
 
         String token = jwtUtils.generateJwtToken(user.getUsername());
+        orderService.mergeOrder(user.getId(), sessionId);
+
         return new AuthResponseDTO(
                 user.getUsername(),
                 token
         );
     }
-
 }

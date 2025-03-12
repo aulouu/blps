@@ -44,4 +44,17 @@ public class Order {
     )
     @Builder.Default
     private List<Restaurant> restaurants = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = true)
+    private User user;
+
+    @Column(nullable = true, unique = true)
+    private String sessionId;
+
+    @Column(nullable = false)
+    private Boolean isConfirmed = false;
+
+    @Column(nullable = false)
+    private Boolean isPaid = false;
 }

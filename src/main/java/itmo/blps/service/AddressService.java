@@ -18,8 +18,8 @@ public class AddressService {
     private final ModelMapper modelMapper;
 
     public List<AddressResponse> getAllAddresses() {
-        List<Address> coordinates = addressRepository.findAll();
-        return modelMapper.map(coordinates, new TypeToken<List<AddressResponse>>(){}.getType());
+        List<Address> addresses = addressRepository.findAll();
+        return modelMapper.map(addresses, new TypeToken<List<AddressResponse>>(){}.getType());
     }
 
     public AddressResponse getAddressById(Long id) {
