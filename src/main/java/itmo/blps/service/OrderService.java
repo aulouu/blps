@@ -19,9 +19,11 @@ public class OrderService {
     private final ModelMapper modelMapper;
     private final AddressService addressService;
 
-    public OrderResponse addProductToOrder(Long productId, String sessionId, String username) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+    public OrderResponse addProductToOrder(String productName, String sessionId, String username) {
+        Product product = productRepository.findByName(productName)
+                .orElseThrow(() -> new ProductNotFoundException(
+                        String.format("Product %s not found", productName)
+                ));
 
         Order order = getOrder(sessionId, username);
 
@@ -38,10 +40,14 @@ public class OrderService {
 
     public OrderResponse confirmOrder(Long orderId, String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(
+                        String.format("Username %s not found", username)
+                ));
 
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+                .orElseThrow(() -> new OrderNotFoundException(
+                        String.format("Order with id %d not found", orderId)
+                ));
 
         if (!order.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("Order does not belong to the user");
@@ -57,12 +63,14 @@ public class OrderService {
         return modelMapper.map(savedOrder, OrderResponse.class);
     }
 
-    public void mergeOrder(Long userId, String sessionId) {
+    public void mergeOrder(String username, String sessionId) {
         Order sessionOrder = orderRepository.findBySessionIdAndIsConfirmedFalse(sessionId)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found"));
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(
+                        String.format("Username %s not found", username)
+                ));
 
         sessionOrder.setUser(user);
         sessionOrder.setSessionId(null);
@@ -87,7 +95,9 @@ public class OrderService {
         Order order;
         if (username != null) {
             User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+                    .orElseThrow(() -> new UserNotFoundException(
+                            String.format("Username %s not found", username)
+                    ));
             order = orderRepository.findByUserIdAndIsConfirmedFalse(user.getId())
                     .orElseGet(() -> Order.builder().user(user).cost(0.0).build());
         } else {

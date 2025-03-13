@@ -38,7 +38,7 @@ public class AuthService {
 
         user = userRepository.save(user);
         String token = jwtUtils.generateJwtToken(user.getUsername());
-        orderService.mergeOrder(user.getId(), sessionId);
+        orderService.mergeOrder(user.getUsername(), sessionId);
 
         return new AuthResponseDTO(
                 user.getUsername(),
@@ -57,7 +57,7 @@ public class AuthService {
         );
 
         String token = jwtUtils.generateJwtToken(user.getUsername());
-        orderService.mergeOrder(user.getId(), sessionId);
+        orderService.mergeOrder(user.getUsername(), sessionId);
 
         return new AuthResponseDTO(
                 user.getUsername(),

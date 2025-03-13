@@ -22,10 +22,10 @@ public class OrderController {
     private final HttpSession httpSession;
 
     @PostMapping("/add_product")
-    public OrderResponse addProductToOrder(@RequestBody Long productId, HttpSession httpSession) {
+    public OrderResponse addProductToOrder(@RequestBody String productName, HttpSession httpSession) {
         String username = getCurrentUser();
 //        String sessionId = getCurrentSessionId();
-        return orderService.addProductToOrder(productId, httpSession.getId(), username);
+        return orderService.addProductToOrder(productName, httpSession.getId(), username);
     }
 
     @PostMapping("/confirm")
