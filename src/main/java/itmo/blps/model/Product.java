@@ -26,6 +26,9 @@ public class Product {
     @Column(nullable = false)
     private Double amount;
 
+    @Column(nullable = false)
+    private Double stock;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;

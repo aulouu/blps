@@ -36,15 +36,6 @@ public class Order {
     @Builder.Default
     private List<Product> products = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "order_restaurants",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "restaurant_id")
-    )
-    @Builder.Default
-    private List<Restaurant> restaurants = new ArrayList<>();
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = true)
     private User user;

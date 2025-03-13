@@ -1,7 +1,11 @@
 package itmo.blps.dto.auth;
 
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
+@Data
+@Builder(toBuilder = true)
 @Getter
 public class AuthResponseDTO {
     private final String tokenType = "Bearer ";

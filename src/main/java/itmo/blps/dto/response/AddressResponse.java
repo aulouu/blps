@@ -1,14 +1,12 @@
 package itmo.blps.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 
 @Data
 @Builder(toBuilder = true)
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class AddressResponse {
     private Long id;
     private String city;

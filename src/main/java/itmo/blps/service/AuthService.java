@@ -62,4 +62,13 @@ public class AuthService {
                 token
         );
     }
+
+    public AuthResponseDTO checkAuth(User user) {
+        if (user != null && userRepository.existsByUsername(user.getUsername()))
+            return AuthResponseDTO.builder()
+                    .username(user.getUsername())
+                    .token(jwtUtils.generateJwtToken(user.getUsername()))
+                    .build();
+        return AuthResponseDTO.builder().build();
+    }
 }
