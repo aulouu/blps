@@ -1,14 +1,14 @@
 package itmo.blps.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import itmo.blps.dto.auth.*;
+import itmo.blps.dto.auth.AuthResponseDTO;
+import itmo.blps.dto.auth.LoginUserDTO;
+import itmo.blps.dto.auth.RegisterUserDTO;
 import itmo.blps.service.AuthService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RestController
 @RequestMapping("/auth")
