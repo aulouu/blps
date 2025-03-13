@@ -1,6 +1,7 @@
 package itmo.blps.service;
 
 import itmo.blps.dto.response.ProductResponse;
+import itmo.blps.exceptions.ProductNotFoundException;
 import itmo.blps.model.Product;
 import itmo.blps.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,9 @@ public class ProductService {
 
     public ProductResponse getProductById(Long id) {
         if (!productRepository.existsById(id)) {
-            throw new IllegalArgumentException("Product with id " + id + " does not exist");
+            throw  new ProductNotFoundException(
+                    String.format("Product with id %d not found", id)
+            );
         }
         return modelMapper.map(productRepository.findById(id), ProductResponse.class);
     }
