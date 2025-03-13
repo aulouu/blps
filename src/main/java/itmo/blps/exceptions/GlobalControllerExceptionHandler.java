@@ -29,9 +29,36 @@ public class GlobalControllerExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleOrderNotFoundException(OrderNotFoundException e) {
+        return new ErrorResponse(e.getClass().getCanonicalName(),
+                e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleProductNotFoundException(ProductNotFoundException e) {
+        return new ErrorResponse(e.getClass().getCanonicalName(),
+                e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleAddressNotFoundException(AddressNotFoundException e) {
+        return new ErrorResponse(e.getClass().getCanonicalName(),
+                e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleAddressNotProvidedException(AddressNotProvidedException e) {
+        return new ErrorResponse(e.getClass().getCanonicalName(),
+                e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e) {
-        return new ErrorResponse(
-                e.getClass().getCanonicalName(),
+        return new ErrorResponse(e.getClass().getCanonicalName(),
                 e.getMessage());
     }
 

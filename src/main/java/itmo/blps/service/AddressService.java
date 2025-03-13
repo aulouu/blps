@@ -2,6 +2,7 @@ package itmo.blps.service;
 
 import itmo.blps.dto.request.AddressRequest;
 import itmo.blps.dto.response.AddressResponse;
+import itmo.blps.exceptions.*;
 import itmo.blps.model.Address;
 import itmo.blps.repository.AddressRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,9 @@ public class AddressService {
 
     public AddressResponse getAddressById(Long id) {
         if (!addressRepository.existsById(id)) {
-            throw new IllegalArgumentException("Address not found");
+            throw  new AddressNotFoundException(
+                    String.format("Address with id %d not found", id)
+            );
         }
         return modelMapper.map(addressRepository.findById(id), AddressResponse.class);
     }
@@ -37,7 +40,7 @@ public class AddressService {
                 addressRequest.getEntrance(),
                 addressRequest.getFloor(),
                 addressRequest.getFlat())) {
-            throw new IllegalArgumentException("Address already exists");
+            throw new AddressNotFoundException("Address already exists");
         };
         Address addresses = modelMapper.map(addressRequest, Address.class);
         Address savedAddress = addressRepository.save(addresses);
