@@ -1,6 +1,6 @@
 package itmo.blps.security.jwt;
 
-import itmo.aulouu.is.security.service.AuthUserDetailsService;
+import itmo.blps.security.service.AuthUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

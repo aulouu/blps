@@ -1,8 +1,7 @@
 package itmo.blps.security;
 
-import itmo.aulouu.is.security.jwt.JwtAuthEntryPoint;
-import itmo.aulouu.is.security.jwt.JwtAuthTokenFilter;
-import itmo.aulouu.is.security.service.AuthUserDetailsService;
+import itmo.blps.security.jwt.*;
+import itmo.blps.security.service.AuthUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

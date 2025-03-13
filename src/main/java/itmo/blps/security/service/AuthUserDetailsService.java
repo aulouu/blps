@@ -1,6 +1,6 @@
 package itmo.blps.security.service;
 
-import itmo.aulouu.is.dao.UserRepository;
+import itmo.blps.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
