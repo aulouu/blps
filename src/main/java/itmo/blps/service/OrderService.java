@@ -54,7 +54,7 @@ public class OrderService {
         }
 
         if (order.getAddress() == null) {
-            throw new RuntimeException("Address not specified");
+            throw new AddressNotProvidedException("Address not specified");
         }
 
         order.setIsConfirmed(true);
