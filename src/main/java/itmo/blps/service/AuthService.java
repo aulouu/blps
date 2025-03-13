@@ -1,23 +1,21 @@
 package itmo.blps.service;
 
+import itmo.blps.dto.auth.AuthResponseDTO;
+import itmo.blps.dto.auth.LoginUserDTO;
+import itmo.blps.dto.auth.RegisterUserDTO;
 import itmo.blps.repository.UserRepository;
-import itmo.blps.dto.auth.*;
 import itmo.blps.exceptions.*;
 import itmo.blps.model.User;
 import itmo.blps.security.jwt.JwtUtils;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
