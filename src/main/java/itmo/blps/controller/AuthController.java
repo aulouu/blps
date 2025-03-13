@@ -10,7 +10,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
