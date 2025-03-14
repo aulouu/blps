@@ -33,6 +33,9 @@ public class OrderController {
     @PostMapping("/confirm")
     public OrderResponse confirmOrder(HttpSession httpSession, @RequestBody @Valid ConfirmOrderRequest confirmOrderRequest) {
         String username = getCurrentUser();
+        if (username == null) {
+            throw new UserNotAuthorizedException("User is not authenticated");
+        }
         return orderService.confirmOrder(httpSession.getId(), username, confirmOrderRequest);
     }
 

@@ -116,9 +116,6 @@ public class OrderService {
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid delivery time format. Expected HH:mm");
         }
-        if (deliveryTime.isBefore(currentTime)) {
-            throw new IllegalArgumentException("Delivery time cannot be in the past");
-        }
         long differenceInMinutes = ChronoUnit.MINUTES.between(currentTime, deliveryTime);
         if (differenceInMinutes <= 60) {
             throw new IllegalArgumentException("Delivery time must be at least 1 hour from now");
