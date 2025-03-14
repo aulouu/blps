@@ -48,9 +48,6 @@ public class OrderController {
     @GetMapping("/get_current")
     public OrderResponse getCurrentOrder(HttpSession httpSession) {
         String username = getCurrentUser();
-        if (username == null) {
-            throw new UserNotAuthorizedException("User is not authenticated");
-        }
         return orderService.getCurrentOrder(httpSession.getId(), username);
     }
 
