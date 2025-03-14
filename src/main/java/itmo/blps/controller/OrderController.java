@@ -4,7 +4,7 @@ import itmo.blps.dto.request.AddressRequest;
 import itmo.blps.dto.request.ConfirmOrderRequest;
 import itmo.blps.dto.request.ProductRequest;
 import itmo.blps.dto.response.OrderResponse;
-import itmo.blps.dto.response.ProductResponse;
+import itmo.blps.exceptions.UserNotAuthorizedException;
 import itmo.blps.service.OrderService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -45,6 +45,9 @@ public class OrderController {
     @GetMapping("/get_current")
     public OrderResponse getCurrentOrder(HttpSession httpSession) {
         String username = getCurrentUser();
+        if (username == null) {
+            throw new UserNotAuthorizedException("User is not authenticated");
+        }
         return orderService.getCurrentOrder(httpSession.getId(), username);
     }
 
@@ -52,7 +55,6 @@ public class OrderController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || auth.getPrincipal() == null || !(auth.getPrincipal() instanceof UserDetails userDetails)) {
             return null;
-//            throw new IllegalStateException("no authentication");
         }
         return userDetails.getUsername();
     }

@@ -29,6 +29,13 @@ public class GlobalControllerExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleUserNotAuthorizedException(UserNotAuthorizedException e) {
+        return new ErrorResponse(e.getClass().getCanonicalName(),
+                e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleOrderNotFoundException(OrderNotFoundException e) {
         return new ErrorResponse(e.getClass().getCanonicalName(),
                 e.getMessage());
@@ -58,6 +65,13 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleCardNotFoundException(CardNotFoundException e) {
+        return new ErrorResponse(e.getClass().getCanonicalName(),
+                e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCardNotProvidedException(CardNotProvidedException e) {
         return new ErrorResponse(e.getClass().getCanonicalName(),
                 e.getMessage());
     }

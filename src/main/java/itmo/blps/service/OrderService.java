@@ -59,7 +59,7 @@ public class OrderService {
             throw new AddressNotProvidedException("Address not provided");
         }
 
-        order.setCost(order.getCost() + product.getPrice());
+        order.setCost(order.getCost() + product.getAmount() * product.getPrice());
 
         Optional<Product> exist = order.getProducts().stream()
                 .filter(p -> Objects.equals(p.getId(), product.getId()))
@@ -113,6 +113,9 @@ public class OrderService {
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid delivery time format. Expected HH:mm");
         }
+        if (deliveryTime.isBefore(currentTime)) {
+            throw new IllegalArgumentException("Delivery time cannot be in the past");
+        }
         long differenceInMinutes = ChronoUnit.MINUTES.between(currentTime, deliveryTime);
         if (differenceInMinutes <= 60) {
             throw new IllegalArgumentException("Delivery time must be at least 1 hour from now");
@@ -160,7 +163,7 @@ public class OrderService {
     }
 
     //TODO: save address after payment to user's addresses list
-    private Order getOrder(String sessionId, String username) {
+    public Order getOrder(String sessionId, String username) {
         Order order;
         if (username != null) {
             User user = userRepository.findByUsername(username)

@@ -1,38 +1,43 @@
 package itmo.blps.controller;
 
 import itmo.blps.dto.request.CardRequest;
-import itmo.blps.dto.response.OrderResponse;
-import itmo.blps.dto.response.PaymentResponse;
-import itmo.blps.exceptions.UserNotAuthorizedException;
-import itmo.blps.service.OrderService;
-import itmo.blps.service.PaymentService;
-import jakarta.servlet.http.HttpSession;
+import itmo.blps.dto.response.CardResponse;
+import itmo.blps.exceptions.UserNotFoundException;
+import itmo.blps.model.User;
+import itmo.blps.repository.UserRepository;
+import itmo.blps.service.CardService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/payment")
-public class PaymentController {
-    private final PaymentService paymentService;
+@RequestMapping("/api/card")
+public class CardController {
+    private final CardService cardService;
+    private final UserRepository userRepository;
 
-    @PostMapping("/pay")
-    public PaymentResponse payOrder(@RequestBody(required = false) CardRequest cardRequest) {
+    @GetMapping("/get_all")
+    public List<CardResponse> getAllCards() {
+        return cardService.getAllCards();
+    }
+
+    @PostMapping("/create")
+    public CardResponse createCard(@RequestBody @Valid CardRequest cardRequest) {
         String username = getCurrentUser();
-        if (username == null) {
-            throw new UserNotAuthorizedException("User is not authenticated");
-        }
-        return paymentService.payOrder(username, cardRequest);
+        return cardService.createCard(cardRequest, username);
     }
 
     private String getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || auth.getPrincipal() == null || !(auth.getPrincipal() instanceof UserDetails userDetails)) {
             return null;
+//            throw new IllegalStateException("no authentication");
         }
         return userDetails.getUsername();
     }
