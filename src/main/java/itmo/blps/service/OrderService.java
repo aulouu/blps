@@ -59,8 +59,6 @@ public class OrderService {
             throw new AddressNotProvidedException("Address not provided");
         }
 
-        order.setCost(order.getCost() + product.getAmount() * product.getPrice());
-
         Optional<Product> exist = order.getProducts().stream()
                 .filter(p -> Objects.equals(p.getId(), product.getId()))
                 .findFirst();
@@ -75,6 +73,11 @@ public class OrderService {
             order.getProducts().add(product);
             productRepository.save(product);
         }
+
+        double totalCost = order.getProducts().stream()
+                .mapToDouble(p -> p.getPrice() * p.getAmount())
+                .sum();
+        order.setCost(totalCost);
 
         order = orderRepository.save(order);
 

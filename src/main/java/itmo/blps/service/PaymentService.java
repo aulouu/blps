@@ -26,6 +26,7 @@ public class PaymentService {
 
     public PaymentResponse payOrder(String username, CardRequest cardRequest) {
         Order order = orderService.getOrder(null, username);
+        System.out.println(order);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(
                         String.format("Username %s not found", username)
