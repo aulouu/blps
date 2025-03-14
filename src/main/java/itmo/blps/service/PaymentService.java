@@ -22,14 +22,15 @@ public class PaymentService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final CardService cardService;
-    private final OrderService orderService;
 
     public PaymentResponse payOrder(String username, CardRequest cardRequest) {
-        Order order = orderService.getOrder(null, username);
-        System.out.println(order);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(
                         String.format("Username %s not found", username)
+                ));
+        Order order = orderRepository.findByUserIdAndIsConfirmedTrueAndIsPaidFalse(user.getId())
+                .orElseThrow(() -> new OrderNotFoundException(
+                        String.format("Order not found for payment, user %s", username)
                 ));
         if (!order.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("Order does not belong to the user");
@@ -50,6 +51,7 @@ public class PaymentService {
             }
             CardResponse cardResponse = cardService.createCard(cardRequest, username);
             card = modelMapper.map(cardResponse, Card.class);
+            card.setUser(user);
             card = cardRepository.save(card);
         } else {
             card = cardOptional.get();
@@ -59,12 +61,22 @@ public class PaymentService {
             throw new RuntimeException("Insufficient funds on the card");
         }
         card.setMoney(card.getMoney() - order.getCost());
-        Card updatedCard = cardRepository.save(card);
+        cardRepository.save(card);
         order.setIsPaid(true);
         orderRepository.save(order);
+        if (user.getAddresses().stream().noneMatch(address ->
+                address.getStreet().equals(order.getAddress().getStreet()) &&
+                        address.getCity().equals(order.getAddress().getCity()) &&
+                        address.getBuilding().equals(order.getAddress().getBuilding()) &&
+                        address.getEntrance().equals(order.getAddress().getEntrance()) &&
+                        address.getFloor().equals(order.getAddress().getFloor()) &&
+                        address.getFlat().equals(order.getAddress().getFlat())
+        )) {
+            user.getAddresses().add(order.getAddress());
+        }
         return PaymentResponse.builder()
                 .message("Payment successful")
-                .card(updatedCard)
+                .order(order)
                 .build();
     }
 }

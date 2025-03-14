@@ -86,7 +86,6 @@ public class OrderService {
         return modelMapper.map(order, OrderResponse.class);
     }
 
-    // TODO сброс количества после оплаты
     public OrderResponse confirmOrder(String sessionId, String username, ConfirmOrderRequest confirmOrderRequest) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(
@@ -117,6 +116,9 @@ public class OrderService {
             deliveryTime = LocalTime.parse(confirmOrderRequest.getDeliveryTime());
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid delivery time format. Expected HH:mm");
+        }
+        if (deliveryTime.isBefore(currentTime)) {
+            throw new IllegalArgumentException("Delivery time cannot be in the past");
         }
         long differenceInMinutes = ChronoUnit.MINUTES.between(currentTime, deliveryTime);
         if (differenceInMinutes <= 60) {
@@ -164,7 +166,6 @@ public class OrderService {
         return modelMapper.map(order, OrderResponse.class);
     }
 
-    //TODO: save address after payment to user's addresses list
     public Order getOrder(String sessionId, String username) {
         Order order;
         if (username != null) {

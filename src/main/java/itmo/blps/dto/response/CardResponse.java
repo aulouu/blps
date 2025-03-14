@@ -11,6 +11,5 @@ public class CardResponse {
     private Long id;
     private Integer number;
     private Double expiration;
-    private Integer cvv;
     private Double money;
 }

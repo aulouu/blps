@@ -1,6 +1,6 @@
 package itmo.blps.dto.response;
 
-import itmo.blps.model.Card;
+import itmo.blps.model.Order;
 import lombok.*;
 
 @Data
@@ -10,5 +10,5 @@ import lombok.*;
 @NoArgsConstructor
 public class PaymentResponse {
     private String message;
-    private Card card;
+    private Order order;
 }
