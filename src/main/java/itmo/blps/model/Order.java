@@ -1,12 +1,13 @@
 package itmo.blps.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import itmo.blps.dto.response.ProductResponse;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,13 +29,7 @@ public class Order {
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "order_products",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    @Builder.Default
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "order")
     private List<Product> products = new ArrayList<>();
 
     @Column(name = "delivery_time")

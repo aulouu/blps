@@ -1,7 +1,7 @@
 package itmo.blps.dto.request;
 
 import itmo.blps.model.Address;
-import itmo.blps.model.Product;
+import itmo.blps.model.Stock;
 import itmo.blps.model.Restaurant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +17,6 @@ import java.util.List;
 public class OrderRequest {
     private Double cost;
     private Address address;
-    private List<Product> products;
+    private List<Stock> products;
     private List<Restaurant> restaurants;
 }
