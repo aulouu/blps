@@ -24,14 +24,14 @@ public class Address {
     private String street;
 
     @Column(nullable = false)
-    private String building;
+    private Integer building;
 
     @Column(nullable = false)
-    private String entrance;
+    private Integer entrance;
 
     @Column(nullable = false)
-    private String floor;
+    private Integer floor;
 
     @Column(nullable = false)
-    private String flat;
+    private Integer flat;
 }

@@ -103,9 +103,11 @@ public class OrderService {
 
     // TODO поправить сессии
     public void mergeOrder(String username, String sessionId) {
-        Order sessionOrder = orderRepository.findBySessionIdAndIsConfirmedFalse(sessionId)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
-
+        Optional<Order> sessionOrderOptional = orderRepository.findBySessionIdAndIsConfirmedFalse(sessionId);
+        if (sessionOrderOptional.isEmpty()) {
+            return;
+        }
+        Order sessionOrder = sessionOrderOptional.get();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(
                         String.format("Username %s not found", username)
@@ -133,7 +135,6 @@ public class OrderService {
     }
 
     //TODO: save address after payment to user's addresses list
-
     private Order getOrder(String sessionId, String username) {
         Order order;
         if (username != null) {

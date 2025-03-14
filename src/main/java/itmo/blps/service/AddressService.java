@@ -25,7 +25,7 @@ public class AddressService {
 
     public AddressResponse getAddressById(Long id) {
         if (!addressRepository.existsById(id)) {
-            throw  new AddressNotFoundException(
+            throw new AddressNotFoundException(
                     String.format("Address with id %d not found", id)
             );
         }
@@ -41,7 +41,7 @@ public class AddressService {
                 addressRequest.getFloor(),
                 addressRequest.getFlat())) {
             throw new AddressNotFoundException("Address already exists");
-        };
+        }
         Address addresses = modelMapper.map(addressRequest, Address.class);
         Address savedAddress = addressRepository.save(addresses);
         return modelMapper.map(savedAddress, AddressResponse.class);

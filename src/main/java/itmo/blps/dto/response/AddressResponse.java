@@ -11,9 +11,9 @@ public class AddressResponse {
     private Long id;
     private String city;
     private String street;
-    private String building;
-    private String entrance;
-    private String floor;
-    private String flat;
+    private Integer building;
+    private Integer entrance;
+    private Integer floor;
+    private Integer flat;
 
 }
