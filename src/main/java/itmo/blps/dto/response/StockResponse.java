@@ -8,10 +8,10 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductResponse {
+public class StockResponse {
     private Long id;
     private String name;
     private Double price;
-    private Double count;
+    private Double amount;
     private Restaurant restaurant;
 }
