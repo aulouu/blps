@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ProductRequest {
-    private String name;
+    private Long productId;
     private Double amount;
     private String restaurant;
 }

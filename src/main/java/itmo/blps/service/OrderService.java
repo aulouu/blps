@@ -41,12 +41,12 @@ public class OrderService {
     }
 
     public OrderResponse addProductToOrder(ProductRequest productRequest, String sessionId, String username) {
-        Product product = productRepository.findByName(productRequest.getName())
+        Product product = productRepository.findById(productRequest.getProductId())
                 .orElseThrow(() -> new ProductNotFoundException(
-                        String.format("Product %s not found", productRequest.getName())
+                        String.format("Product %s not found", productRequest.getProductId())
                 ));
         if (productRequest.getAmount() > product.getStock()) {
-            throw new ProductIsOutOfStockException(String.format("Amount of %s exceeds stock", productRequest.getName()));
+            throw new ProductIsOutOfStockException(String.format("Amount of %s exceeds stock", productRequest.getProductId()));
         }
 
         Order order = getOrder(sessionId, username);
@@ -56,14 +56,13 @@ public class OrderService {
         }
 
         order.setCost(order.getCost() + product.getPrice());
-        product.setAmount(product.getAmount() - productRequest.getAmount());
 
         Optional<Product> exist = order.getProducts().stream()
                 .filter(p -> Objects.equals(p.getId(), product.getId()))
                 .findFirst();
 
         if (exist.isPresent()) {
-            exist.get().setAmount(exist.get().getAmount() + productRequest.getAmount()); // TODO не прибалвяется
+            exist.get().setAmount(exist.get().getAmount() + productRequest.getAmount());
             exist.get().setStock(exist.get().getStock() - productRequest.getAmount());
             productRepository.save(exist.get());
         } else {
@@ -78,7 +77,7 @@ public class OrderService {
         return modelMapper.map(order, OrderResponse.class);
     }
 
-    // TODO сброс количества после конферма
+    // TODO сброс количества после оплаты
     public OrderResponse confirmOrder(String sessionId, String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(
@@ -101,7 +100,6 @@ public class OrderService {
         return modelMapper.map(savedOrder, OrderResponse.class);
     }
 
-    // TODO поправить сессии
     public void mergeOrder(String username, String sessionId) {
         Optional<Order> sessionOrderOptional = orderRepository.findBySessionIdAndIsConfirmedFalse(sessionId);
         if (sessionOrderOptional.isEmpty()) {
