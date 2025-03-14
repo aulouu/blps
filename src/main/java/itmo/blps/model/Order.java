@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,12 @@ public class Order {
     )
     @Builder.Default
     private List<Product> products = new ArrayList<>();
+
+    @Column(name = "delivery_time")
+    private String deliveryTime;
+
+    @Column(name = "utensils_count")
+    private Integer utensilsCount;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = true)

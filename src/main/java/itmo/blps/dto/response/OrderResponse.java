@@ -2,10 +2,9 @@ package itmo.blps.dto.response;
 
 import itmo.blps.model.Address;
 import itmo.blps.model.Product;
-import itmo.blps.model.Restaurant;
-import itmo.blps.model.User;
 import lombok.*;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Data
@@ -19,4 +18,6 @@ public class OrderResponse {
     private Address address;
     private UserResponse user;
     private List<Product> products;
+    private String deliveryTime;
+    private Integer utensilsCount;
 }

@@ -1,6 +1,7 @@
 package itmo.blps.service;
 
 import itmo.blps.dto.request.AddressRequest;
+import itmo.blps.dto.request.ConfirmOrderRequest;
 import itmo.blps.dto.request.ProductRequest;
 import itmo.blps.dto.response.OrderResponse;
 import itmo.blps.exceptions.*;
@@ -10,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -78,7 +82,7 @@ public class OrderService {
     }
 
     // TODO сброс количества после оплаты
-    public OrderResponse confirmOrder(String sessionId, String username) {
+    public OrderResponse confirmOrder(String sessionId, String username, ConfirmOrderRequest confirmOrderRequest) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(
                         String.format("Username %s not found", username)
@@ -93,6 +97,29 @@ public class OrderService {
         if (order.getAddress() == null) {
             throw new AddressNotProvidedException("Address not specified");
         }
+
+        if (confirmOrderRequest.getDeliveryTime() == null) {
+            throw new IllegalArgumentException("Delivery time is required");
+        }
+
+        if (confirmOrderRequest.getUtensilsCount() == null || confirmOrderRequest.getUtensilsCount() <= 0) {
+            throw new IllegalArgumentException("Utensils count must be a positive number");
+        }
+
+        LocalTime currentTime = LocalTime.now();
+        LocalTime deliveryTime;
+        try {
+            deliveryTime = LocalTime.parse(confirmOrderRequest.getDeliveryTime());
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid delivery time format. Expected HH:mm");
+        }
+        long differenceInMinutes = ChronoUnit.MINUTES.between(currentTime, deliveryTime);
+        if (differenceInMinutes <= 60) {
+            throw new IllegalArgumentException("Delivery time must be at least 1 hour from now");
+        }
+
+        order.setDeliveryTime(confirmOrderRequest.getDeliveryTime());
+        order.setUtensilsCount(confirmOrderRequest.getUtensilsCount());
 
         order.setIsConfirmed(true);
         Order savedOrder = orderRepository.save(order);

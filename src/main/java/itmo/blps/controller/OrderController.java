@@ -1,6 +1,7 @@
 package itmo.blps.controller;
 
 import itmo.blps.dto.request.AddressRequest;
+import itmo.blps.dto.request.ConfirmOrderRequest;
 import itmo.blps.dto.request.ProductRequest;
 import itmo.blps.dto.response.OrderResponse;
 import itmo.blps.dto.response.ProductResponse;
@@ -30,9 +31,9 @@ public class OrderController {
     }
 
     @PostMapping("/confirm")
-    public OrderResponse confirmOrder(HttpSession httpSession) {
+    public OrderResponse confirmOrder(HttpSession httpSession, @RequestBody @Valid ConfirmOrderRequest confirmOrderRequest) {
         String username = getCurrentUser();
-        return orderService.confirmOrder(httpSession.getId(), username);
+        return orderService.confirmOrder(httpSession.getId(), username, confirmOrderRequest);
     }
 
     @PostMapping("/set_address")
