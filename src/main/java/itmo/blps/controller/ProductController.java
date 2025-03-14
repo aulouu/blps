@@ -1,7 +1,7 @@
 package itmo.blps.controller;
 
-import itmo.blps.dto.response.ProductResponse;
-import itmo.blps.service.ProductService;
+import itmo.blps.dto.response.StockResponse;
+import itmo.blps.service.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,15 +11,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/product")
 public class ProductController {
-    private final ProductService productService;
+    private final StockService stockService;
 
     @GetMapping("/get_all")
-    public List<ProductResponse> getAllProducts() {
-        return productService.getAllProducts();
+    public List<StockResponse> getAllProducts() {
+        return stockService.getAllProductsOnStock();
     }
 
     @GetMapping("/get")
-    public ProductResponse getProductById(Long productId) {
-        return productService.getProductById(productId);
+    public StockResponse getProductById(Long productId) {
+        return stockService.getProductFromStockById(productId);
     }
 }

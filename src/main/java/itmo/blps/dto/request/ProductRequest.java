@@ -11,6 +11,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ProductRequest {
     private Long productId;
-    private Double amount;
-    private String restaurant;
+    private Double count;
+    private Long restaurantId;
 }

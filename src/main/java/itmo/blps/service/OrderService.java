@@ -22,9 +22,9 @@ import java.util.Optional;
 public class OrderService {
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
+    private final StockRepository stockRepository;
     private final ProductRepository productRepository;
     private final AddressRepository addressRepository;
-    private final RestaurantRepository restaurantRepository;
     private final ModelMapper modelMapper;
     private final AddressService addressService;
 
@@ -45,11 +45,11 @@ public class OrderService {
     }
 
     public OrderResponse addProductToOrder(ProductRequest productRequest, String sessionId, String username) {
-        Product product = productRepository.findById(productRequest.getProductId())
+        Stock productOnStock = stockRepository.findById(productRequest.getProductId())
                 .orElseThrow(() -> new ProductNotFoundException(
                         String.format("Product %s not found", productRequest.getProductId())
                 ));
-        if (productRequest.getAmount() > product.getStock()) {
+        if (productRequest.getCount() > productOnStock.getAmount()) {
             throw new ProductIsOutOfStockException(String.format("Amount of %s exceeds stock", productRequest.getProductId()));
         }
 
@@ -59,23 +59,25 @@ public class OrderService {
             throw new AddressNotProvidedException("Address not provided");
         }
 
+        Product productInOrder = productRepository.findByProductOnStockAndOrder(productOnStock, order)
+                .orElseGet(Product.builder().productOnStock(productOnStock).count(0.0).order(order)::build);
+
+        productOnStock.setAmount(productOnStock.getAmount() - productRequest.getCount());
+        productInOrder.setCount(productInOrder.getCount() + productRequest.getCount());
+
+        stockRepository.save(productOnStock);
+        productRepository.save(productInOrder);
+
         Optional<Product> exist = order.getProducts().stream()
-                .filter(p -> Objects.equals(p.getId(), product.getId()))
+                .filter(p -> Objects.equals(p.getId(), productInOrder.getId()))
                 .findFirst();
 
-        if (exist.isPresent()) {
-            exist.get().setAmount(exist.get().getAmount() + productRequest.getAmount());
-            exist.get().setStock(exist.get().getStock() - productRequest.getAmount());
-            productRepository.save(exist.get());
-        } else {
-            product.setAmount(productRequest.getAmount());
-            product.setStock(product.getStock() - productRequest.getAmount());
-            order.getProducts().add(product);
-            productRepository.save(product);
+        if (exist.isEmpty()) {
+            order.getProducts().add(productInOrder);
         }
 
         double totalCost = order.getProducts().stream()
-                .mapToDouble(p -> p.getPrice() * p.getAmount())
+                .mapToDouble(p -> productOnStock.getPrice() * productInOrder.getCount())
                 .sum();
         order.setCost(totalCost);
 
