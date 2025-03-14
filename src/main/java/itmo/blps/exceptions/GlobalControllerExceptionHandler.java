@@ -57,6 +57,13 @@ public class GlobalControllerExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCardNotFoundException(CardNotFoundException e) {
+        return new ErrorResponse(e.getClass().getCanonicalName(),
+                e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e) {
         return new ErrorResponse(e.getClass().getCanonicalName(),
                 e.getMessage());
