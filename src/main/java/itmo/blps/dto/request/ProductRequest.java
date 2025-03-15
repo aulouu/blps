@@ -12,5 +12,4 @@ import lombok.Getter;
 public class ProductRequest {
     private Long productId;
     private Double count;
-    private Long restaurantId;
 }
