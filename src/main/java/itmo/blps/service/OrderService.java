@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
@@ -112,20 +114,21 @@ public class OrderService {
             throw new IllegalArgumentException("Utensils count must be a positive number");
         }
 
-        LocalTime currentTime = LocalTime.now();
-        LocalTime deliveryTime;
-        try {
-            deliveryTime = LocalTime.parse(confirmOrderRequest.getDeliveryTime());
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid delivery time format. Expected HH:mm");
-        }
-        if (deliveryTime.isBefore(currentTime)) {
-            throw new IllegalArgumentException("Delivery time cannot be in the past");
-        }
-        long differenceInMinutes = ChronoUnit.MINUTES.between(currentTime, deliveryTime);
-        if (differenceInMinutes <= 60) {
-            throw new IllegalArgumentException("Delivery time must be at least 1 hour from now");
-        }
+//        LocalTime currentTime = LocalTime.now();
+//        LocalTime deliveryTime;
+//        try {
+//            deliveryTime = LocalTime.parse(confirmOrderRequest.getDeliveryTime());
+//        } catch (DateTimeParseException e) {
+//            throw new IllegalArgumentException("Invalid delivery time format. Expected HH:mm");
+//        }
+//        if (deliveryTime.isBefore(currentTime)) {
+//            throw new IllegalArgumentException("Delivery time cannot be in the past");
+//        }
+//        long differenceInMinutes = ChronoUnit.MINUTES.between(currentTime, deliveryTime);
+//        if (differenceInMinutes <= 60) {
+//            throw new IllegalArgumentException("Delivery time must be at least 1 hour from now");
+//        }
+        validateDeliveryTime(confirmOrderRequest.getDeliveryTime());
 
         order.setDeliveryTime(confirmOrderRequest.getDeliveryTime());
         order.setUtensilsCount(confirmOrderRequest.getUtensilsCount());
@@ -183,5 +186,42 @@ public class OrderService {
                     .orElseGet(() -> Order.builder().sessionId(sessionId).cost(0.0).isConfirmed(false).isPaid(false).build());
         }
         return order;
+    }
+
+    public static void validateDeliveryTime(String deliveryTimeInput) {
+        LocalDateTime currentDateTime = LocalDateTime.now(); // Текущие дата и время
+        LocalDateTime deliveryDateTime;
+
+        // Формат для ввода: "день.месяц часы:минуты" (например, "12.10 14:30")
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM HH:mm");
+
+        try {
+            // Парсим введенное время доставки
+            // Поскольку ввод содержит только день и месяц, добавляем текущий год
+            String inputWithYear = deliveryTimeInput + " " + currentDateTime.getYear();
+            DateTimeFormatter formatterWithYear = DateTimeFormatter.ofPattern("dd.MM HH:mm yyyy");
+            deliveryDateTime = LocalDateTime.parse(inputWithYear, formatterWithYear);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid delivery time format. Expected format: 'dd.MM HH:mm'");
+        }
+
+        // Проверка, что дата доставки не раньше текущей даты
+        if (deliveryDateTime.toLocalDate().isBefore(currentDateTime.toLocalDate())) {
+            throw new IllegalArgumentException("Delivery date cannot be in the past");
+        }
+
+        // Если дата доставки сегодня
+        if (deliveryDateTime.toLocalDate().isEqual(currentDateTime.toLocalDate())) {
+            // Проверка, что время доставки не раньше текущего времени
+            if (deliveryDateTime.toLocalTime().isBefore(currentDateTime.toLocalTime())) {
+                throw new IllegalArgumentException("Delivery time cannot be in the past for today");
+            }
+
+            // Проверка, что время доставки не менее чем через час от текущего времени
+            long differenceInMinutes = ChronoUnit.MINUTES.between(currentDateTime.toLocalTime(), deliveryDateTime.toLocalTime());
+            if (differenceInMinutes <= 60) {
+                throw new IllegalArgumentException("Delivery time must be at least 1 hour from now for today");
+            }
+        }
     }
 }
