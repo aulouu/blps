@@ -41,7 +41,7 @@ public class AddressService {
                 addressRequest.getEntrance(),
                 addressRequest.getFloor(),
                 addressRequest.getFlat())) {
-            throw new AddressNotFoundException("Address already exists");
+            throw new AddressAlreadyExistsException("Address already exists");
         }
         Address addresses = modelMapper.map(addressRequest, Address.class);
         Address savedAddress = addressRepository.save(addresses);
@@ -50,22 +50,22 @@ public class AddressService {
 
     public static void validateAddressRequest(AddressRequest addressRequest) throws IllegalArgumentException {
         if (addressRequest.getCity() == null || addressRequest.getCity().isEmpty() || !addressRequest.getCity().matches("^[a-zA-Z\\s]+$")) {
-            throw new IllegalArgumentException("City must contain only letters");
+            throw new NotValidInputException("City must contain only letters");
         }
         if (addressRequest.getStreet() == null || addressRequest.getStreet().isEmpty() || !addressRequest.getStreet().matches("^[a-zA-Z\\s]+$")) {
-            throw new IllegalArgumentException("City must contain only letters");
+            throw new NotValidInputException("City must contain only letters");
         }
         if (addressRequest.getBuilding() == null || addressRequest.getBuilding() <= 0) {
-            throw new IllegalArgumentException("Building must be positive");
+            throw new NotValidInputException("Building must be positive");
         }
         if (addressRequest.getEntrance() == null || addressRequest.getEntrance() <= 0) {
-            throw new IllegalArgumentException("Entrance must be positive");
+            throw new NotValidInputException("Entrance must be positive");
         }
         if (addressRequest.getFloor() == null || addressRequest.getFloor() <= 0) {
-            throw new IllegalArgumentException("Floor must be positive");
+            throw new NotValidInputException("Floor must be positive");
         }
         if (addressRequest.getFlat() == null || addressRequest.getFlat() <= 0) {
-            throw new IllegalArgumentException("Flat must be positive");
+            throw new NotValidInputException("Flat must be positive");
         }
     }
 }

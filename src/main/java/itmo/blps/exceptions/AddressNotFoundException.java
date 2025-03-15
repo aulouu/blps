@@ -1,6 +1,6 @@
 package itmo.blps.exceptions;
 
-public class AddressNotFoundException extends IllegalArgumentException {
+public class AddressNotFoundException extends RuntimeException {
     public AddressNotFoundException(String message) {
         super(message);
     }

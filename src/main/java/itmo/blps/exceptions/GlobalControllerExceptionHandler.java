@@ -14,42 +14,63 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalControllerExceptionHandler {
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleUserAlreadyExistException(UserAlreadyExistException e) {
         return new ErrorResponse(e.getClass().getCanonicalName(),
                 e.getMessage());
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleUserNotFoundException(UserNotFoundException e) {
         return new ErrorResponse(e.getClass().getCanonicalName(),
                 e.getMessage());
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleUserNotAuthorizedException(UserNotAuthorizedException e) {
         return new ErrorResponse(e.getClass().getCanonicalName(),
                 e.getMessage());
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleOrderNotFoundException(OrderNotFoundException e) {
         return new ErrorResponse(e.getClass().getCanonicalName(),
                 e.getMessage());
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleOrderNotBelongException(OrderNotBelongException e) {
+        return new ErrorResponse(e.getClass().getCanonicalName(),
+                e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleNotValidOrderStatusException(NotValidOrderStatusException e) {
+        return new ErrorResponse(e.getClass().getCanonicalName(),
+                e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleProductNotFoundException(ProductNotFoundException e) {
         return new ErrorResponse(e.getClass().getCanonicalName(),
                 e.getMessage());
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleProductIsOutOfStockException(ProductIsOutOfStockException e) {
+        return new ErrorResponse(e.getClass().getCanonicalName(),
+                e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleAddressNotFoundException(AddressNotFoundException e) {
         return new ErrorResponse(e.getClass().getCanonicalName(),
                 e.getMessage());
@@ -63,7 +84,14 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleAddressAlreadyExistsException(AddressAlreadyExistsException e) {
+        return new ErrorResponse(e.getClass().getCanonicalName(),
+                e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleCardNotFoundException(CardNotFoundException e) {
         return new ErrorResponse(e.getClass().getCanonicalName(),
                 e.getMessage());
@@ -72,6 +100,27 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleCardNotProvidedException(CardNotProvidedException e) {
+        return new ErrorResponse(e.getClass().getCanonicalName(),
+                e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleCardAlreadyExistsException(CardAlreadyExistsException e) {
+        return new ErrorResponse(e.getClass().getCanonicalName(),
+                e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.PAYMENT_REQUIRED)
+    public ErrorResponse handleNotEnoughMoneyException(NotEnoughMoneyException e) {
+        return new ErrorResponse(e.getClass().getCanonicalName(),
+                e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErrorResponse handleNotValidInputException(NotValidInputException e) {
         return new ErrorResponse(e.getClass().getCanonicalName(),
                 e.getMessage());
     }

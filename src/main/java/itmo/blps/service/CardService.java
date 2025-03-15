@@ -2,7 +2,9 @@ package itmo.blps.service;
 
 import itmo.blps.dto.request.CardRequest;
 import itmo.blps.dto.response.CardResponse;
+import itmo.blps.exceptions.CardAlreadyExistsException;
 import itmo.blps.exceptions.CardNotFoundException;
+import itmo.blps.exceptions.NotValidInputException;
 import itmo.blps.exceptions.UserNotFoundException;
 import itmo.blps.model.Card;
 import itmo.blps.model.User;
@@ -47,7 +49,7 @@ public class CardService {
                 cardRequest.getExpiration(),
                 cardRequest.getCvv(),
                 cardRequest.getMoney())) {
-            throw new CardNotFoundException("Card already exists");
+            throw new CardAlreadyExistsException("Card already exists");
         }
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(
@@ -63,26 +65,26 @@ public class CardService {
 
     public static void validateCardRequest(CardRequest cardRequest) throws IllegalArgumentException {
         if (cardRequest.getNumber() == null || cardRequest.getNumber().length() != 16 || !cardRequest.getNumber().matches("^[0-9]+$")) {
-            throw new IllegalArgumentException("Card number must have 16 numbers");
+            throw new NotValidInputException("Card number must have 16 numbers");
         }
         if (cardRequest.getExpiration() == null || cardRequest.getExpiration().isEmpty() || !cardRequest.getExpiration().matches("^(0[1-9]|1[0-2])/[0-9]{2}$")) {
-            throw new IllegalArgumentException("Expire date must be in the format MM/yy");
+            throw new NotValidInputException("Expire date must be in the format MM/yy");
         }
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
             YearMonth expirationDate = YearMonth.parse(cardRequest.getExpiration(), formatter);
             YearMonth currentDate = YearMonth.now();
             if (expirationDate.isBefore(currentDate)) {
-                throw new IllegalArgumentException("Date expired");
+                throw new NotValidInputException("Date expired");
             }
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid expire date format");
+            throw new NotValidInputException("Invalid expire date format");
         }
         if (cardRequest.getCvv() == null || cardRequest.getCvv().length() != 3) {
-            throw new IllegalArgumentException("CVV must have 3 numbers");
+            throw new NotValidInputException("CVV must have 3 numbers");
         }
         if (cardRequest.getMoney() == null || cardRequest.getMoney() <= 0) {
-            throw new IllegalArgumentException("Card balance must be positive");
+            throw new NotValidInputException("Card balance must be positive");
         }
     }
 }

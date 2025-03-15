@@ -99,7 +99,7 @@ public class OrderService {
         Order order = getOrder(sessionId, username);
 
         if (!order.getUser().getId().equals(user.getId())) {
-            throw new IllegalArgumentException("Order does not belong to the user");
+            throw new OrderNotBelongException("Order does not belong to the user");
         }
 
         if (order.getAddress() == null) {
@@ -114,20 +114,6 @@ public class OrderService {
             throw new IllegalArgumentException("Utensils count must be a positive number");
         }
 
-//        LocalTime currentTime = LocalTime.now();
-//        LocalTime deliveryTime;
-//        try {
-//            deliveryTime = LocalTime.parse(confirmOrderRequest.getDeliveryTime());
-//        } catch (DateTimeParseException e) {
-//            throw new IllegalArgumentException("Invalid delivery time format. Expected HH:mm");
-//        }
-//        if (deliveryTime.isBefore(currentTime)) {
-//            throw new IllegalArgumentException("Delivery time cannot be in the past");
-//        }
-//        long differenceInMinutes = ChronoUnit.MINUTES.between(currentTime, deliveryTime);
-//        if (differenceInMinutes <= 60) {
-//            throw new IllegalArgumentException("Delivery time must be at least 1 hour from now");
-//        }
         validateDeliveryTime(confirmOrderRequest.getDeliveryTime());
 
         order.setDeliveryTime(confirmOrderRequest.getDeliveryTime());
@@ -207,20 +193,20 @@ public class OrderService {
 
         // Проверка, что дата доставки не раньше текущей даты
         if (deliveryDateTime.toLocalDate().isBefore(currentDateTime.toLocalDate())) {
-            throw new IllegalArgumentException("Delivery date cannot be in the past");
+            throw new NotValidInputException("Delivery date cannot be in the past");
         }
 
         // Если дата доставки сегодня
         if (deliveryDateTime.toLocalDate().isEqual(currentDateTime.toLocalDate())) {
             // Проверка, что время доставки не раньше текущего времени
             if (deliveryDateTime.toLocalTime().isBefore(currentDateTime.toLocalTime())) {
-                throw new IllegalArgumentException("Delivery time cannot be in the past for today");
+                throw new NotValidInputException("Delivery time cannot be in the past for today");
             }
 
             // Проверка, что время доставки не менее чем через час от текущего времени
             long differenceInMinutes = ChronoUnit.MINUTES.between(currentDateTime.toLocalTime(), deliveryDateTime.toLocalTime());
             if (differenceInMinutes <= 60) {
-                throw new IllegalArgumentException("Delivery time must be at least 1 hour from now for today");
+                throw new NotValidInputException("Delivery time must be at least 1 hour from now for today");
             }
         }
     }

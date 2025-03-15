@@ -1,4 +1,4 @@
-INSERT INTO restaurants (name) VALUES
+INSERT INTO restaurant (name) VALUES
                                    ('Pizza Hut'),
                                    ('Burger King'),
                                    ('Sushi Master'),

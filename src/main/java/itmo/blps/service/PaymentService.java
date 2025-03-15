@@ -35,13 +35,13 @@ public class PaymentService {
                         String.format("Order not found for payment, user %s", username)
                 ));
         if (!order.getUser().getId().equals(user.getId())) {
-            throw new IllegalArgumentException("Order does not belong to the user");
+            throw new OrderNotBelongException("Order does not belong to the user");
         }
         if (!order.getIsConfirmed()) {
-            throw new IllegalArgumentException("Order is not confirmed");
+            throw new NotValidOrderStatusException("Order is not confirmed");
         }
         if (order.getIsPaid()) {
-            throw new IllegalArgumentException("Order is already paid");
+            throw new NotValidOrderStatusException("Order is already paid");
         }
 
         validateCardRequest(cardRequest);
@@ -62,12 +62,12 @@ public class PaymentService {
         } else {
             card = cardOptional.get();
             if (!card.getCvv().equals(hashedCvv)) {
-                throw new IllegalArgumentException("Invalid CVV");
+                throw new NotValidInputException("Invalid CVV");
             }
         }
 
         if (card.getMoney() < order.getCost()) {
-            throw new IllegalArgumentException("Insufficient funds on the card");
+            throw new NotEnoughMoneyException("Insufficient funds on the card");
         }
         card.setMoney(card.getMoney() - order.getCost());
         cardRepository.save(card);
