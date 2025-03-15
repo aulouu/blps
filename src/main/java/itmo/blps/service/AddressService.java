@@ -33,6 +33,7 @@ public class AddressService {
     }
 
     public AddressResponse createAddress(AddressRequest addressRequest) {
+        validateAddressRequest(addressRequest);
         if (addressRepository.existsByCityAndStreetAndBuildingAndEntranceAndFloorAndFlat(
                 addressRequest.getCity(),
                 addressRequest.getStreet(),
@@ -47,4 +48,24 @@ public class AddressService {
         return modelMapper.map(savedAddress, AddressResponse.class);
     }
 
+    public static void validateAddressRequest(AddressRequest addressRequest) throws IllegalArgumentException {
+        if (addressRequest.getCity() == null || addressRequest.getCity().isEmpty() || !addressRequest.getCity().matches("^[a-zA-Z\\s]+$")) {
+            throw new IllegalArgumentException("City must contain only letters");
+        }
+        if (addressRequest.getStreet() == null || addressRequest.getStreet().isEmpty() || !addressRequest.getStreet().matches("^[a-zA-Z\\s]+$")) {
+            throw new IllegalArgumentException("City must contain only letters");
+        }
+        if (addressRequest.getBuilding() == null || addressRequest.getBuilding() <= 0) {
+            throw new IllegalArgumentException("Building must be positive");
+        }
+        if (addressRequest.getEntrance() == null || addressRequest.getEntrance() <= 0) {
+            throw new IllegalArgumentException("Entrance must be positive");
+        }
+        if (addressRequest.getFloor() == null || addressRequest.getFloor() <= 0) {
+            throw new IllegalArgumentException("Floor must be positive");
+        }
+        if (addressRequest.getFlat() == null || addressRequest.getFlat() <= 0) {
+            throw new IllegalArgumentException("Flat must be positive");
+        }
+    }
 }

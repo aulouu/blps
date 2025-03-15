@@ -6,6 +6,7 @@ import itmo.blps.dto.response.PaymentResponse;
 import itmo.blps.exceptions.*;
 import itmo.blps.model.*;
 import itmo.blps.repository.*;
+import itmo.blps.security.HashUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -33,16 +34,18 @@ public class PaymentService {
                         String.format("Order not found for payment, user %s", username)
                 ));
         if (!order.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Order does not belong to the user");
+            throw new IllegalArgumentException("Order does not belong to the user");
         }
         if (!order.getIsConfirmed()) {
-            throw new RuntimeException("Order is not confirmed");
+            throw new IllegalArgumentException("Order is not confirmed");
         }
         if (order.getIsPaid()) {
-            throw new RuntimeException("Order is already paid");
+            throw new IllegalArgumentException("Order is already paid");
         }
 
         validateCardRequest(cardRequest);
+
+        String hashedCvv = HashUtil.hashCvv(cardRequest.getCvv());
 
         Card card;
         Optional<Card> cardOptional = cardRepository.findByUserIdAndNumberAndExpirationAndCvvAndMoney(
@@ -56,10 +59,13 @@ public class PaymentService {
             card = cardRepository.save(card);
         } else {
             card = cardOptional.get();
+            if (!card.getCvv().equals(hashedCvv)) {
+                throw new IllegalArgumentException("Invalid CVV");
+            }
         }
 
         if (card.getMoney() < order.getCost()) {
-            throw new RuntimeException("Insufficient funds on the card");
+            throw new IllegalArgumentException("Insufficient funds on the card");
         }
         card.setMoney(card.getMoney() - order.getCost());
         cardRepository.save(card);

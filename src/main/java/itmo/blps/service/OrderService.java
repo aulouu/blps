@@ -17,6 +17,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.Optional;
 
+import static itmo.blps.service.AddressService.validateAddressRequest;
+
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -95,18 +97,18 @@ public class OrderService {
         Order order = getOrder(sessionId, username);
 
         if (!order.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Order does not belong to the user");
+            throw new IllegalArgumentException("Order does not belong to the user");
         }
 
         if (order.getAddress() == null) {
             throw new AddressNotProvidedException("Address not specified");
         }
 
-        if (confirmOrderRequest.getDeliveryTime() == null) {
+        if (confirmOrderRequest.getDeliveryTime() == null || confirmOrderRequest.getDeliveryTime().isEmpty()) {
             throw new IllegalArgumentException("Delivery time is required");
         }
 
-        if (confirmOrderRequest.getUtensilsCount() == null || confirmOrderRequest.getUtensilsCount() <= 0) {
+        if (confirmOrderRequest.getUtensilsCount() == null || confirmOrderRequest.getUtensilsCount() < 0) {
             throw new IllegalArgumentException("Utensils count must be a positive number");
         }
 
@@ -153,6 +155,7 @@ public class OrderService {
     }
 
     public OrderResponse setAddress(AddressRequest addressRequest, String sessionId, String username) {
+        validateAddressRequest(addressRequest);
         Address address = addressRepository.findByCityAndStreetAndBuildingAndEntranceAndFloorAndFlat(
                 addressRequest.getCity(), addressRequest.getStreet(), addressRequest.getBuilding(),
                 addressRequest.getEntrance(), addressRequest.getFloor(), addressRequest.getFlat())

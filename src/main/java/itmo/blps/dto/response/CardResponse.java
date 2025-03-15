@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 public class CardResponse {
     private Long id;
-    private Integer number;
-    private Double expiration;
+    private String number;
+    private String expiration;
     private Double money;
 }

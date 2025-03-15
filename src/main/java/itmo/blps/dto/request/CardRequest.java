@@ -8,8 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CardRequest {
-    private Integer number;
-    private Double expiration;
-    private Integer cvv;
+    private String number;
+    private String expiration;
+    private String cvv;
     private Double money;
 }
