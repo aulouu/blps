@@ -1,8 +1,11 @@
 package itmo.blps.config;
 
 import itmo.blps.model.Order;
+import itmo.blps.model.Product;
+import itmo.blps.model.Stock;
 import itmo.blps.repository.OrderRepository;
 import itmo.blps.repository.ProductRepository;
+import itmo.blps.repository.StockRepository;
 import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionListener;
@@ -20,6 +23,8 @@ public class SessionCleanupListener implements HttpSessionListener {
     private OrderRepository orderRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private StockRepository stockRepository;
 
 //    @Override
 //    public void sessionCreated(HttpSessionEvent se) {
@@ -30,15 +35,23 @@ public class SessionCleanupListener implements HttpSessionListener {
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
         String sessionId = se.getSession().getId();
-        System.out.println("Сессия завершена: " + sessionId);
-        orderRepository.deleteByIsConfirmedFalse();
-        orderRepository.deleteByIsPaidFalse();
+        System.out.println("Session ended: " + sessionId);
 
         List<Order> orders = orderRepository.findByIsConfirmedFalseOrIsPaidFalse()
                 .orElse(null);
         if (orders == null) return;
         for (Order order : orders) {
-            productRepository.deleteByOrderId(order.getId());
+            List<Product> productsToDelete = productRepository.findByOrderId(order.getId())
+                    .orElse(null);
+            if (productsToDelete == null) continue;
+            for (Product product : productsToDelete) {
+                Stock productOnStock = stockRepository.findById(product.getProductOnStock().getId())
+                        .orElse(null);
+                if (productOnStock == null) continue;
+                productOnStock.setAmount(productOnStock.getAmount() + product.getCount());
+                stockRepository.save(productOnStock);
+                productRepository.delete(product);
+            }
         }
 
         orderRepository.deleteAll(orders);

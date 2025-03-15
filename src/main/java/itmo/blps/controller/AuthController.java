@@ -34,4 +34,10 @@ public class AuthController {
     public AuthResponseDTO checkAuth(@AuthenticationPrincipal User user) {
         return authService.checkAuth(user);
     }
+
+    @PostMapping("/invalidate_session")
+    public String invalidateSession(HttpSession session) {
+        session.invalidate();
+        return "Session invalidated";
+    }
 }

@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static itmo.blps.service.CardService.validateCardRequest;
+
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
@@ -42,13 +44,14 @@ public class PaymentService {
             throw new RuntimeException("Order is already paid");
         }
 
+        validateCardRequest(cardRequest);
+
         Card card;
-        Optional<Card> cardOptional = cardRepository.findByUserId(user.getId());
+        Optional<Card> cardOptional = cardRepository.findByUserIdAndNumberAndExpirationAndCvvAndMoney(
+                user.getId(), cardRequest.getNumber(), cardRequest.getExpiration(),
+                cardRequest.getCvv(), cardRequest.getMoney());
 
         if (cardOptional.isEmpty()) {
-            if (cardRequest == null) {
-                throw new CardNotProvidedException("Card details are required");
-            }
             CardResponse cardResponse = cardService.createCard(cardRequest, username);
             card = modelMapper.map(cardResponse, Card.class);
             card.setUser(user);

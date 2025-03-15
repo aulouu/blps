@@ -20,7 +20,6 @@ import java.util.List;
 @RequestMapping("/api/card")
 public class CardController {
     private final CardService cardService;
-    private final UserRepository userRepository;
 
     @GetMapping("/get_all")
     public List<CardResponse> getAllCards() {

@@ -9,6 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface CardRepository extends JpaRepository<Card, Long> {
     Optional<Card> findByUserId(Long userId);
     boolean existsByNumberAndExpirationAndCvvAndMoney(Integer number, Double expiration, Integer cvv, Double money);
-
-    Optional<Card> findByNumberAndExpirationAndCvvAndMoney(Integer number, Double expiration, Integer cvv, Double money);
+    Optional<Card> findByUserIdAndNumberAndExpirationAndCvvAndMoney(Long userId, Integer number, Double expiration, Integer cvv, Double money);
 }

@@ -57,4 +57,22 @@ public class CardService {
         Card savedCard = cardRepository.save(card);
         return modelMapper.map(savedCard, CardResponse.class);
     }
+
+    public static void validateCardRequest(CardRequest cardRequest) throws IllegalArgumentException {
+        if (cardRequest.getNumber() == null || cardRequest.getNumber().toString().length() != 16) {
+            throw new IllegalArgumentException("Card number must have 16 numbers");
+        }
+
+        if (cardRequest.getExpiration() == null || cardRequest.getExpiration() <= 0) {
+            throw new IllegalArgumentException("Wrong expire date");
+        }
+
+        if (cardRequest.getCvv() == null || cardRequest.getCvv().toString().length() != 3) {
+            throw new IllegalArgumentException("CVV must have 3 numbers");
+        }
+
+        if (cardRequest.getMoney() == null || cardRequest.getMoney() <= 0) {
+            throw new IllegalArgumentException("Card balance must be positive");
+        }
+    }
 }
