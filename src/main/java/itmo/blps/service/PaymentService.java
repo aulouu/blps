@@ -1,9 +1,7 @@
 package itmo.blps.service;
 
-import itmo.blps.dto.request.AddressRequest;
 import itmo.blps.dto.request.CardRequest;
 import itmo.blps.dto.response.CardResponse;
-import itmo.blps.dto.response.OrderResponse;
 import itmo.blps.dto.response.PaymentResponse;
 import itmo.blps.exceptions.*;
 import itmo.blps.model.*;

@@ -2,9 +2,6 @@ package itmo.blps.controller;
 
 import itmo.blps.dto.request.CardRequest;
 import itmo.blps.dto.response.CardResponse;
-import itmo.blps.exceptions.UserNotFoundException;
-import itmo.blps.model.User;
-import itmo.blps.repository.UserRepository;
 import itmo.blps.service.CardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

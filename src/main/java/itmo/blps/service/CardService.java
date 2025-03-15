@@ -1,13 +1,9 @@
 package itmo.blps.service;
 
-import itmo.blps.dto.request.AddressRequest;
 import itmo.blps.dto.request.CardRequest;
-import itmo.blps.dto.response.AddressResponse;
 import itmo.blps.dto.response.CardResponse;
-import itmo.blps.exceptions.AddressNotFoundException;
 import itmo.blps.exceptions.CardNotFoundException;
 import itmo.blps.exceptions.UserNotFoundException;
-import itmo.blps.model.Address;
 import itmo.blps.model.Card;
 import itmo.blps.model.User;
 import itmo.blps.repository.CardRepository;

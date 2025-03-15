@@ -12,7 +12,5 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findByProductOnStockAndOrder(Stock productOnStock, Order order);
-    Product findByProductOnStock(Stock productOnStock);
     Optional<List<Product>> findByOrderId(Long productId);
-    void deleteByOrderId(Long orderId);
 }
