@@ -2,6 +2,7 @@ package itmo.blps.service;
 
 import itmo.blps.dto.request.CardRequest;
 import itmo.blps.dto.response.CardResponse;
+import itmo.blps.dto.response.OrderResponse;
 import itmo.blps.dto.response.PaymentResponse;
 import itmo.blps.exceptions.*;
 import itmo.blps.model.*;
@@ -56,6 +57,7 @@ public class PaymentService {
             CardResponse cardResponse = cardService.createCard(cardRequest, username);
             card = modelMapper.map(cardResponse, Card.class);
             card.setUser(user);
+            card.setCvv(hashedCvv);
             card = cardRepository.save(card);
         } else {
             card = cardOptional.get();
@@ -83,7 +85,7 @@ public class PaymentService {
         }
         return PaymentResponse.builder()
                 .message("Payment successful")
-                .order(order)
+                .order(modelMapper.map(order, OrderResponse.class))
                 .build();
     }
 }

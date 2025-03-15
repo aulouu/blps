@@ -10,5 +10,5 @@ import lombok.*;
 @NoArgsConstructor
 public class PaymentResponse {
     private String message;
-    private Order order;
+    private OrderResponse order;
 }
