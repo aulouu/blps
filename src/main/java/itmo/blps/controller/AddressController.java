@@ -20,7 +20,7 @@ public class AddressController {
         return addressService.getAllAddresses();
     }
 
-    @PostMapping("/create")
+    @PostMapping("/create_address")
     public AddressResponse createAddress(@RequestBody @Valid AddressRequest addressRequest) {
         return addressService.createAddress(addressRequest);
     }

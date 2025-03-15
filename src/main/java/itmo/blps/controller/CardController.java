@@ -23,7 +23,7 @@ public class CardController {
         return cardService.getAllCards();
     }
 
-    @PostMapping("/create")
+    @PostMapping("/create_card")
     public CardResponse createCard(@RequestBody @Valid CardRequest cardRequest) {
         String username = getCurrentUser();
         return cardService.createCard(cardRequest, username);

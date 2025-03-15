@@ -18,13 +18,13 @@ public class Card {
     private Long id;
 
     @Column(nullable = false)
-    private Integer number;
+    private String number;
 
     @Column(nullable = false)
-    private Double expiration;
+    private String expiration;
 
     @Column(nullable = false)
-    private Integer cvv;
+    private String cvv;
 
     @Column(nullable = false)
     private Double money;
