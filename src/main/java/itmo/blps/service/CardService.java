@@ -15,10 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
+
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-
 import java.util.List;
 
 @Service
@@ -28,9 +28,35 @@ public class CardService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
+    public static void validateCardRequest(CardRequest cardRequest) throws IllegalArgumentException {
+        if (cardRequest.getNumber() == null || cardRequest.getNumber().length() != 16 || !cardRequest.getNumber().matches("^[0-9]+$")) {
+            throw new NotValidInputException("Card number must have 16 numbers");
+        }
+        if (cardRequest.getExpiration() == null || cardRequest.getExpiration().isEmpty() || !cardRequest.getExpiration().matches("^(0[1-9]|1[0-2])/[0-9]{2}$")) {
+            throw new NotValidInputException("Expire date must be in the format MM/yy");
+        }
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
+            YearMonth expirationDate = YearMonth.parse(cardRequest.getExpiration(), formatter);
+            YearMonth currentDate = YearMonth.now();
+            if (expirationDate.isBefore(currentDate)) {
+                throw new NotValidInputException("Date expired");
+            }
+        } catch (DateTimeParseException e) {
+            throw new NotValidInputException("Invalid expire date format");
+        }
+        if (cardRequest.getCvv() == null || cardRequest.getCvv().length() != 3) {
+            throw new NotValidInputException("CVV must have 3 numbers");
+        }
+        if (cardRequest.getMoney() == null || cardRequest.getMoney() <= 0) {
+            throw new NotValidInputException("Card balance must be positive");
+        }
+    }
+
     public List<CardResponse> getAllCards() {
         List<Card> cards = cardRepository.findAll();
-        return modelMapper.map(cards, new TypeToken<List<CardResponse>>(){}.getType());
+        return modelMapper.map(cards, new TypeToken<List<CardResponse>>() {
+        }.getType());
     }
 
     public CardResponse getCardById(Long id) {
@@ -61,30 +87,5 @@ public class CardService {
         card.setCvv(hashedCvv);
         Card savedCard = cardRepository.save(card);
         return modelMapper.map(savedCard, CardResponse.class);
-    }
-
-    public static void validateCardRequest(CardRequest cardRequest) throws IllegalArgumentException {
-        if (cardRequest.getNumber() == null || cardRequest.getNumber().length() != 16 || !cardRequest.getNumber().matches("^[0-9]+$")) {
-            throw new NotValidInputException("Card number must have 16 numbers");
-        }
-        if (cardRequest.getExpiration() == null || cardRequest.getExpiration().isEmpty() || !cardRequest.getExpiration().matches("^(0[1-9]|1[0-2])/[0-9]{2}$")) {
-            throw new NotValidInputException("Expire date must be in the format MM/yy");
-        }
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
-            YearMonth expirationDate = YearMonth.parse(cardRequest.getExpiration(), formatter);
-            YearMonth currentDate = YearMonth.now();
-            if (expirationDate.isBefore(currentDate)) {
-                throw new NotValidInputException("Date expired");
-            }
-        } catch (DateTimeParseException e) {
-            throw new NotValidInputException("Invalid expire date format");
-        }
-        if (cardRequest.getCvv() == null || cardRequest.getCvv().length() != 3) {
-            throw new NotValidInputException("CVV must have 3 numbers");
-        }
-        if (cardRequest.getMoney() == null || cardRequest.getMoney() <= 0) {
-            throw new NotValidInputException("Card balance must be positive");
-        }
     }
 }

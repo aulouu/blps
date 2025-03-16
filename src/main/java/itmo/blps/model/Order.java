@@ -1,7 +1,5 @@
 package itmo.blps.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import itmo.blps.dto.response.ProductResponse;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

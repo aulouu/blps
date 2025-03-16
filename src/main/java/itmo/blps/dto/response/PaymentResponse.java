@@ -1,6 +1,5 @@
 package itmo.blps.dto.response;
 
-import itmo.blps.model.Order;
 import lombok.*;
 
 @Data

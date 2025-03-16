@@ -1,9 +1,6 @@
 package itmo.blps.dto.request;
 
-import jakarta.validation.constraints.Pattern;
 import lombok.*;
-
-import java.time.LocalTime;
 
 @Data
 @Builder(toBuilder = true)

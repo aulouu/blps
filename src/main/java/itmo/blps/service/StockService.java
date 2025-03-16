@@ -19,12 +19,13 @@ public class StockService {
 
     public List<StockResponse> getAllProductsOnStock() {
         List<Stock> productsStock = stockRepository.findAll();
-        return modelMapper.map(productsStock, new TypeToken<List<StockResponse>>(){}.getType());
+        return modelMapper.map(productsStock, new TypeToken<List<StockResponse>>() {
+        }.getType());
     }
 
     public StockResponse getProductFromStockById(Long id) {
         if (!stockRepository.existsById(id)) {
-            throw  new ProductNotFoundException(
+            throw new ProductNotFoundException(
                     String.format("Product with id %d not found", id)
             );
         }

@@ -2,7 +2,9 @@ package itmo.blps.service;
 
 import itmo.blps.dto.request.AddressRequest;
 import itmo.blps.dto.response.AddressResponse;
-import itmo.blps.exceptions.*;
+import itmo.blps.exceptions.AddressAlreadyExistsException;
+import itmo.blps.exceptions.AddressNotFoundException;
+import itmo.blps.exceptions.NotValidInputException;
 import itmo.blps.model.Address;
 import itmo.blps.repository.AddressRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +20,31 @@ public class AddressService {
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
 
+    public static void validateAddressRequest(AddressRequest addressRequest) throws IllegalArgumentException {
+        if (addressRequest.getCity() == null || addressRequest.getCity().isEmpty() || !addressRequest.getCity().matches("^[a-zA-Z\\s]+$")) {
+            throw new NotValidInputException("City must contain only letters");
+        }
+        if (addressRequest.getStreet() == null || addressRequest.getStreet().isEmpty() || !addressRequest.getStreet().matches("^[a-zA-Z\\s]+$")) {
+            throw new NotValidInputException("City must contain only letters");
+        }
+        if (addressRequest.getBuilding() == null || addressRequest.getBuilding() <= 0) {
+            throw new NotValidInputException("Building must be positive");
+        }
+        if (addressRequest.getEntrance() == null || addressRequest.getEntrance() <= 0) {
+            throw new NotValidInputException("Entrance must be positive");
+        }
+        if (addressRequest.getFloor() == null || addressRequest.getFloor() <= 0) {
+            throw new NotValidInputException("Floor must be positive");
+        }
+        if (addressRequest.getFlat() == null || addressRequest.getFlat() <= 0) {
+            throw new NotValidInputException("Flat must be positive");
+        }
+    }
+
     public List<AddressResponse> getAllAddresses() {
         List<Address> addresses = addressRepository.findAll();
-        return modelMapper.map(addresses, new TypeToken<List<AddressResponse>>(){}.getType());
+        return modelMapper.map(addresses, new TypeToken<List<AddressResponse>>() {
+        }.getType());
     }
 
     public AddressResponse getAddressById(Long id) {
@@ -46,26 +70,5 @@ public class AddressService {
         Address addresses = modelMapper.map(addressRequest, Address.class);
         Address savedAddress = addressRepository.save(addresses);
         return modelMapper.map(savedAddress, AddressResponse.class);
-    }
-
-    public static void validateAddressRequest(AddressRequest addressRequest) throws IllegalArgumentException {
-        if (addressRequest.getCity() == null || addressRequest.getCity().isEmpty() || !addressRequest.getCity().matches("^[a-zA-Z\\s]+$")) {
-            throw new NotValidInputException("City must contain only letters");
-        }
-        if (addressRequest.getStreet() == null || addressRequest.getStreet().isEmpty() || !addressRequest.getStreet().matches("^[a-zA-Z\\s]+$")) {
-            throw new NotValidInputException("City must contain only letters");
-        }
-        if (addressRequest.getBuilding() == null || addressRequest.getBuilding() <= 0) {
-            throw new NotValidInputException("Building must be positive");
-        }
-        if (addressRequest.getEntrance() == null || addressRequest.getEntrance() <= 0) {
-            throw new NotValidInputException("Entrance must be positive");
-        }
-        if (addressRequest.getFloor() == null || addressRequest.getFloor() <= 0) {
-            throw new NotValidInputException("Floor must be positive");
-        }
-        if (addressRequest.getFlat() == null || addressRequest.getFlat() <= 0) {
-            throw new NotValidInputException("Flat must be positive");
-        }
     }
 }

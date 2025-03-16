@@ -12,7 +12,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -31,6 +30,43 @@ public class OrderService {
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
     private final AddressService addressService;
+
+    public static void validateDeliveryTime(String deliveryTimeInput) {
+        LocalDateTime currentDateTime = LocalDateTime.now(); // Текущие дата и время
+        LocalDateTime deliveryDateTime;
+
+        // Формат для ввода: "день.месяц часы:минуты" (например, "12.10 14:30")
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM HH:mm");
+
+        try {
+            // Парсим введенное время доставки
+            // Поскольку ввод содержит только день и месяц, добавляем текущий год
+            String inputWithYear = deliveryTimeInput + " " + currentDateTime.getYear();
+            DateTimeFormatter formatterWithYear = DateTimeFormatter.ofPattern("dd.MM HH:mm yyyy");
+            deliveryDateTime = LocalDateTime.parse(inputWithYear, formatterWithYear);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid delivery time format. Expected format: 'dd.MM HH:mm'");
+        }
+
+        // Проверка, что дата доставки не раньше текущей даты
+        if (deliveryDateTime.toLocalDate().isBefore(currentDateTime.toLocalDate())) {
+            throw new NotValidInputException("Delivery date cannot be in the past");
+        }
+
+        // Если дата доставки сегодня
+        if (deliveryDateTime.toLocalDate().isEqual(currentDateTime.toLocalDate())) {
+            // Проверка, что время доставки не раньше текущего времени
+            if (deliveryDateTime.toLocalTime().isBefore(currentDateTime.toLocalTime())) {
+                throw new NotValidInputException("Delivery time cannot be in the past for today");
+            }
+
+            // Проверка, что время доставки не менее чем через час от текущего времени
+            long differenceInMinutes = ChronoUnit.MINUTES.between(currentDateTime.toLocalTime(), deliveryDateTime.toLocalTime());
+            if (differenceInMinutes <= 60) {
+                throw new NotValidInputException("Delivery time must be at least 1 hour from now for today");
+            }
+        }
+    }
 
     public OrderResponse getCurrentOrder(String sessionId, String username) {
         Order order;
@@ -146,8 +182,8 @@ public class OrderService {
     public OrderResponse setAddress(AddressRequest addressRequest, String sessionId, String username) {
         validateAddressRequest(addressRequest);
         Address address = addressRepository.findByCityAndStreetAndBuildingAndEntranceAndFloorAndFlat(
-                addressRequest.getCity(), addressRequest.getStreet(), addressRequest.getBuilding(),
-                addressRequest.getEntrance(), addressRequest.getFloor(), addressRequest.getFlat())
+                        addressRequest.getCity(), addressRequest.getStreet(), addressRequest.getBuilding(),
+                        addressRequest.getEntrance(), addressRequest.getFloor(), addressRequest.getFlat())
                 .orElseGet(() -> {
                     Address newAddress = modelMapper.map(addressService.createAddress(addressRequest), Address.class);
                     return addressRepository.save(newAddress);
@@ -172,42 +208,5 @@ public class OrderService {
                     .orElseGet(() -> Order.builder().sessionId(sessionId).cost(0.0).isConfirmed(false).isPaid(false).build());
         }
         return order;
-    }
-
-    public static void validateDeliveryTime(String deliveryTimeInput) {
-        LocalDateTime currentDateTime = LocalDateTime.now(); // Текущие дата и время
-        LocalDateTime deliveryDateTime;
-
-        // Формат для ввода: "день.месяц часы:минуты" (например, "12.10 14:30")
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM HH:mm");
-
-        try {
-            // Парсим введенное время доставки
-            // Поскольку ввод содержит только день и месяц, добавляем текущий год
-            String inputWithYear = deliveryTimeInput + " " + currentDateTime.getYear();
-            DateTimeFormatter formatterWithYear = DateTimeFormatter.ofPattern("dd.MM HH:mm yyyy");
-            deliveryDateTime = LocalDateTime.parse(inputWithYear, formatterWithYear);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid delivery time format. Expected format: 'dd.MM HH:mm'");
-        }
-
-        // Проверка, что дата доставки не раньше текущей даты
-        if (deliveryDateTime.toLocalDate().isBefore(currentDateTime.toLocalDate())) {
-            throw new NotValidInputException("Delivery date cannot be in the past");
-        }
-
-        // Если дата доставки сегодня
-        if (deliveryDateTime.toLocalDate().isEqual(currentDateTime.toLocalDate())) {
-            // Проверка, что время доставки не раньше текущего времени
-            if (deliveryDateTime.toLocalTime().isBefore(currentDateTime.toLocalTime())) {
-                throw new NotValidInputException("Delivery time cannot be in the past for today");
-            }
-
-            // Проверка, что время доставки не менее чем через час от текущего времени
-            long differenceInMinutes = ChronoUnit.MINUTES.between(currentDateTime.toLocalTime(), deliveryDateTime.toLocalTime());
-            if (differenceInMinutes <= 60) {
-                throw new NotValidInputException("Delivery time must be at least 1 hour from now for today");
-            }
-        }
     }
 }

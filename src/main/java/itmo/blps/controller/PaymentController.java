@@ -1,18 +1,17 @@
 package itmo.blps.controller;
 
 import itmo.blps.dto.request.CardRequest;
-import itmo.blps.dto.response.OrderResponse;
 import itmo.blps.dto.response.PaymentResponse;
 import itmo.blps.exceptions.UserNotAuthorizedException;
-import itmo.blps.service.OrderService;
 import itmo.blps.service.PaymentService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController

@@ -1,6 +1,7 @@
 package itmo.blps.security;
 
-import itmo.blps.security.jwt.*;
+import itmo.blps.security.jwt.JwtAuthEntryPoint;
+import itmo.blps.security.jwt.JwtAuthTokenFilter;
 import itmo.blps.security.service.AuthUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
