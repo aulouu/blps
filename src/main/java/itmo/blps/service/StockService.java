@@ -24,11 +24,10 @@ public class StockService {
     }
 
     public StockResponse getProductFromStockById(Long id) {
-        if (!stockRepository.existsById(id)) {
-            throw new ProductNotFoundException(
-                    String.format("Product with id %d not found", id)
-            );
-        }
-        return modelMapper.map(stockRepository.findById(id), StockResponse.class);
+        return stockRepository.findById(id)
+                .map(stock -> modelMapper.map(stock, StockResponse.class))
+                .orElseThrow(() -> new ProductNotFoundException(
+                        String.format("Product with id %d not found", id)
+                ));
     }
 }
