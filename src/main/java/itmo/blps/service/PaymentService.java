@@ -16,6 +16,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import static itmo.blps.service.CardService.validateCardRequest;
@@ -51,17 +53,29 @@ public class PaymentService {
         validateCardRequest(cardRequest);
 
         String hashedCvv = new BCryptPasswordEncoder().encode(cardRequest.getCvv());
+        YearMonth expirationDate = YearMonth.parse(cardRequest.getExpiration(),
+                DateTimeFormatter.ofPattern("MM/yy"));
+        if (expirationDate.isBefore(YearMonth.now())) {
+            throw new NotValidInputException("Card has expired");
+        }
         Card card;
-        Optional<Card> cardOptional = cardRepository.findByNumberAndExpiration(cardRequest.getNumber(), cardRequest.getExpiration());
+        Optional<Card> cardOptional = cardRepository.findByUser(user);
 
         if (cardOptional.isEmpty()) {
             CardResponse cardResponse = cardService.createCard(cardRequest, username);
             card = modelMapper.map(cardResponse, Card.class);
             card.setUser(user);
             card.setCvv(hashedCvv);
+            card.setMoney(0.0);
             card = cardRepository.save(card);
         } else {
             card = cardOptional.get();
+            if (!cardRequest.getNumber().equals(card.getNumber())) {
+                throw new NotValidInputException("Card number date does not match");
+            }
+            if (!cardRequest.getExpiration().equals(card.getExpiration())) {
+                throw new NotValidInputException("Card expiration date does not match");
+            }
             if (!new BCryptPasswordEncoder().matches(cardRequest.getCvv(), card.getCvv())) {
                 throw new NotValidInputException("Invalid CVV");
             }

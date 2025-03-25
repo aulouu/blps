@@ -28,6 +28,15 @@ public class CardController {
         return cardService.createCard(cardRequest, username);
     }
 
+    @PostMapping("/top_up")
+    public CardResponse topUpBalance(@RequestParam String cardNumber, @RequestParam Double amount) {
+        String username = getCurrentUser();
+        if (username == null) {
+            throw new UserNotAuthorizedException("User is not authenticated");
+        }
+        return cardService.topUpBalance(cardNumber, username, amount);
+    }
+
     private String getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || auth.getPrincipal() == null || !(auth.getPrincipal() instanceof UserDetails userDetails)) {

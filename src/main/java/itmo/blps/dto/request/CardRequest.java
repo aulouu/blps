@@ -11,5 +11,4 @@ public class CardRequest {
     private String number;
     private String expiration;
     private String cvv;
-    private Double money;
 }

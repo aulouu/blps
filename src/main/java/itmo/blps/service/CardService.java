@@ -2,11 +2,9 @@ package itmo.blps.service;
 
 import itmo.blps.dto.request.CardRequest;
 import itmo.blps.dto.response.CardResponse;
-import itmo.blps.exceptions.CardAlreadyExistsException;
-import itmo.blps.exceptions.CardNotFoundException;
-import itmo.blps.exceptions.NotValidInputException;
-import itmo.blps.exceptions.UserNotFoundException;
+import itmo.blps.exceptions.*;
 import itmo.blps.model.Card;
+import itmo.blps.model.Order;
 import itmo.blps.model.User;
 import itmo.blps.repository.CardRepository;
 import itmo.blps.repository.UserRepository;
@@ -48,9 +46,6 @@ public class CardService {
         if (cardRequest.getCvv() == null || cardRequest.getCvv().length() != 3) {
             throw new NotValidInputException("CVV must have 3 numbers");
         }
-        if (cardRequest.getMoney() == null || cardRequest.getMoney() <= 0) {
-            throw new NotValidInputException("Card balance must be positive");
-        }
     }
 
     public List<CardResponse> getAllCards() {
@@ -71,7 +66,7 @@ public class CardService {
     public CardResponse createCard(CardRequest cardRequest, String username) {
         validateCardRequest(cardRequest);
         if (cardRepository.existsByNumber(cardRequest.getNumber())) {
-            throw new CardAlreadyExistsException("Card already exists");
+            throw new CardAlreadyExistsException("Card already exists. Check card number");
         }
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(
@@ -81,7 +76,25 @@ public class CardService {
         card.setUser(user);
         String hashedCvv = new BCryptPasswordEncoder().encode(cardRequest.getCvv());
         card.setCvv(hashedCvv);
+        card.setMoney(0.0);
         Card savedCard = cardRepository.save(card);
         return modelMapper.map(savedCard, CardResponse.class);
+    }
+
+    public CardResponse topUpBalance(String cardNumber, String username, Double amount) {
+        if (amount <= 0) {
+            throw new NotValidInputException("Amount must be positive");
+        }
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(
+                        String.format("Username %s not found", username)
+                ));
+        Card card = cardRepository.findByNumberAndUser(cardNumber, user)
+                .orElseThrow(() -> new CardNotFoundException(
+                        String.format("Card with number %s not found or doesn't belong to user %s. Check card number", cardNumber, username)
+                ));
+        card.setMoney(card.getMoney() + amount);
+        Card updatedCard = cardRepository.save(card);
+        return modelMapper.map(updatedCard, CardResponse.class);
     }
 }

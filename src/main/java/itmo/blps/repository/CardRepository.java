@@ -1,6 +1,7 @@
 package itmo.blps.repository;
 
 import itmo.blps.model.Card;
+import itmo.blps.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +13,9 @@ public interface CardRepository extends JpaRepository<Card, Long> {
 
     boolean existsByNumber(String number);
 
-    Optional<Card> findByNumberAndExpiration(String number, String expiration);
+    Optional<Card> findByNumber(String number);
+
+    Optional<Card> findByNumberAndUser(String number, User user);
+
+    Optional<Card> findByUser(User user);
 }
