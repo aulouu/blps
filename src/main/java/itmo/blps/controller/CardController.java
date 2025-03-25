@@ -2,6 +2,7 @@ package itmo.blps.controller;
 
 import itmo.blps.dto.request.CardRequest;
 import itmo.blps.dto.response.CardResponse;
+import itmo.blps.exceptions.UserNotAuthorizedException;
 import itmo.blps.service.CardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +19,12 @@ import java.util.List;
 public class CardController {
     private final CardService cardService;
 
-    @GetMapping("/get_all")
-    public List<CardResponse> getAllCards() {
-        return cardService.getAllCards();
-    }
-
     @PostMapping("/create_card")
     public CardResponse createCard(@RequestBody @Valid CardRequest cardRequest) {
         String username = getCurrentUser();
+        if (username == null) {
+            throw new UserNotAuthorizedException("User is not authenticated");
+        }
         return cardService.createCard(cardRequest, username);
     }
 
@@ -33,7 +32,6 @@ public class CardController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || auth.getPrincipal() == null || !(auth.getPrincipal() instanceof UserDetails userDetails)) {
             return null;
-//            throw new IllegalStateException("no authentication");
         }
         return userDetails.getUsername();
     }
