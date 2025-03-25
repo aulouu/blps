@@ -10,10 +10,10 @@ import itmo.blps.model.Card;
 import itmo.blps.model.User;
 import itmo.blps.repository.CardRepository;
 import itmo.blps.repository.UserRepository;
-import itmo.blps.security.HashUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.YearMonth;
@@ -70,11 +70,7 @@ public class CardService {
 
     public CardResponse createCard(CardRequest cardRequest, String username) {
         validateCardRequest(cardRequest);
-        if (cardRepository.existsByNumberAndExpirationAndCvvAndMoney(
-                cardRequest.getNumber(),
-                cardRequest.getExpiration(),
-                cardRequest.getCvv(),
-                cardRequest.getMoney())) {
+        if (cardRepository.existsByNumber(cardRequest.getNumber())) {
             throw new CardAlreadyExistsException("Card already exists");
         }
         User user = userRepository.findByUsername(username)
@@ -83,7 +79,7 @@ public class CardService {
                 ));
         Card card = modelMapper.map(cardRequest, Card.class);
         card.setUser(user);
-        String hashedCvv = HashUtil.hashCvv(cardRequest.getCvv());
+        String hashedCvv = new BCryptPasswordEncoder().encode(cardRequest.getCvv());
         card.setCvv(hashedCvv);
         Card savedCard = cardRepository.save(card);
         return modelMapper.map(savedCard, CardResponse.class);

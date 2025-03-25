@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface CardRepository extends JpaRepository<Card, Long> {
     Optional<Card> findByUserId(Long userId);
 
-    boolean existsByNumberAndExpirationAndCvvAndMoney(String number, String expiration, String cvv, Double money);
+    boolean existsByNumber(String number);
 
-    Optional<Card> findByUserIdAndNumberAndExpirationAndCvvAndMoney(Long userId, String number, String expiration, String cvv, Double money);
+    Optional<Card> findByNumberAndExpiration(String number, String expiration);
 }

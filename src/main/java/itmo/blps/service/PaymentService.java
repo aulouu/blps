@@ -11,9 +11,9 @@ import itmo.blps.model.User;
 import itmo.blps.repository.CardRepository;
 import itmo.blps.repository.OrderRepository;
 import itmo.blps.repository.UserRepository;
-import itmo.blps.security.HashUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -50,12 +50,9 @@ public class PaymentService {
 
         validateCardRequest(cardRequest);
 
-        String hashedCvv = HashUtil.hashCvv(cardRequest.getCvv());
-
+        String hashedCvv = new BCryptPasswordEncoder().encode(cardRequest.getCvv());
         Card card;
-        Optional<Card> cardOptional = cardRepository.findByUserIdAndNumberAndExpirationAndCvvAndMoney(
-                user.getId(), cardRequest.getNumber(), cardRequest.getExpiration(),
-                cardRequest.getCvv(), cardRequest.getMoney());
+        Optional<Card> cardOptional = cardRepository.findByNumberAndExpiration(cardRequest.getNumber(), cardRequest.getExpiration());
 
         if (cardOptional.isEmpty()) {
             CardResponse cardResponse = cardService.createCard(cardRequest, username);
@@ -65,7 +62,7 @@ public class PaymentService {
             card = cardRepository.save(card);
         } else {
             card = cardOptional.get();
-            if (!card.getCvv().equals(hashedCvv)) {
+            if (!new BCryptPasswordEncoder().matches(cardRequest.getCvv(), card.getCvv())) {
                 throw new NotValidInputException("Invalid CVV");
             }
         }
