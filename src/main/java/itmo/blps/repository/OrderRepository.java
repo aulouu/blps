@@ -9,15 +9,14 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    Optional<Order> findBySessionIdAndIsConfirmedFalse(String sessionId);
+    Optional<Order> findFirstBySessionIdAndIsConfirmedFalseOrderByCreationTimeDesc(String sessionId);
 
-    Optional<Order> findByUserIdAndIsConfirmedFalse(Long userId);
+    Optional<Order> findFirstByUserIdAndIsConfirmedFalseOrderByCreationTimeDesc(Long userId);
 
     Optional<Order> findByUserIdAndIsConfirmedTrueAndIsPaidFalse(Long userId);
 
     Optional<List<Order>> findByIsConfirmedFalseOrIsPaidFalse();
 
-    void deleteByIsPaidFalse();
-
-    void deleteByIsConfirmedFalse();
+    Optional<Order> findFirstByUserIdOrderByCreationTimeDesc(Long userId);
+    Optional<Order> findFirstBySessionIdOrderByCreationTimeDesc(String userId);
 }

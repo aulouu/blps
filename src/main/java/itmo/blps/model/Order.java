@@ -6,8 +6,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.time.LocalDateTime.now;
 
 @Data
 @Entity
@@ -48,4 +52,7 @@ public class Order {
 
     @Column(nullable = false)
     private Boolean isPaid = false;
+
+    @Column(nullable = false)
+    private LocalDateTime creationTime = now();
 }

@@ -75,11 +75,11 @@ public class OrderService {
                     .orElseThrow(() -> new UserNotFoundException(
                             String.format("Username %s not found", username)
                     ));
-            order = orderRepository.findByUserIdAndIsConfirmedFalse(user.getId())
-                    .orElseGet(() -> Order.builder().user(user).cost(0.0).build());
+            order = orderRepository.findFirstByUserIdOrderByCreationTimeDesc(user.getId())
+                    .orElseGet(() -> Order.builder().user(user).cost(0.0).creationTime(LocalDateTime.now()).build());
         } else {
-            order = orderRepository.findBySessionIdAndIsConfirmedFalse(sessionId)
-                    .orElseGet(() -> Order.builder().sessionId(sessionId).cost(0.0).build());
+            order = orderRepository.findFirstBySessionIdOrderByCreationTimeDesc(sessionId)
+                    .orElseGet(() -> Order.builder().sessionId(sessionId).cost(0.0).creationTime(LocalDateTime.now()).build());
         }
         return modelMapper.map(order, OrderResponse.class);
     }
@@ -93,7 +93,7 @@ public class OrderService {
             throw new ProductIsOutOfStockException(String.format("Amount of %s exceeds stock", productRequest.getProductId()));
         }
 
-        Order order = getOrder(sessionId, username);
+        Order order = getActiveOrder(sessionId, username);
 
         if (order.getAddress() == null) {
             throw new AddressNotProvidedException("Address not provided");
@@ -132,7 +132,7 @@ public class OrderService {
                         String.format("Username %s not found", username)
                 ));
 
-        Order order = getOrder(sessionId, username);
+        Order order = getActiveOrder(sessionId, username);
 
         if (!order.getUser().getId().equals(user.getId())) {
             throw new OrderNotBelongException("Order does not belong to the user");
@@ -162,7 +162,7 @@ public class OrderService {
     }
 
     public void mergeOrder(String username, String sessionId) {
-        Optional<Order> sessionOrderOptional = orderRepository.findBySessionIdAndIsConfirmedFalse(sessionId);
+        Optional<Order> sessionOrderOptional = orderRepository.findFirstBySessionIdAndIsConfirmedFalseOrderByCreationTimeDesc(sessionId);
         if (sessionOrderOptional.isEmpty()) {
             return;
         }
@@ -188,24 +188,24 @@ public class OrderService {
                     Address newAddress = modelMapper.map(addressService.createAddress(addressRequest), Address.class);
                     return addressRepository.save(newAddress);
                 });
-        Order order = getOrder(sessionId, username);
+        Order order = getActiveOrder(sessionId, username);
         order.setAddress(address);
         order = orderRepository.save(order);
         return modelMapper.map(order, OrderResponse.class);
     }
 
-    public Order getOrder(String sessionId, String username) {
+    public Order getActiveOrder(String sessionId, String username) {
         Order order;
         if (username != null) {
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new UserNotFoundException(
                             String.format("Username %s not found", username)
                     ));
-            order = orderRepository.findByUserIdAndIsConfirmedFalse(user.getId())
-                    .orElseGet(() -> Order.builder().user(user).cost(0.0).isConfirmed(false).isPaid(false).build());
+            order = orderRepository.findFirstByUserIdAndIsConfirmedFalseOrderByCreationTimeDesc(user.getId())
+                    .orElseGet(() -> Order.builder().user(user).cost(0.0).isConfirmed(false).isPaid(false).creationTime(LocalDateTime.now()).build());
         } else {
-            order = orderRepository.findBySessionIdAndIsConfirmedFalse(sessionId)
-                    .orElseGet(() -> Order.builder().sessionId(sessionId).cost(0.0).isConfirmed(false).isPaid(false).build());
+            order = orderRepository.findFirstBySessionIdAndIsConfirmedFalseOrderByCreationTimeDesc(sessionId)
+                    .orElseGet(() -> Order.builder().sessionId(sessionId).cost(0.0).isConfirmed(false).isPaid(false).creationTime(LocalDateTime.now()).build());
         }
         return order;
     }

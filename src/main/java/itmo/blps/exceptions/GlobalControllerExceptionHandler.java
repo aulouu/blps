@@ -131,4 +131,10 @@ public class GlobalControllerExceptionHandler {
         String errorMessage = "Ошибка валидации:\n" + String.join("\n", errors);
         return new ErrorResponse(errorMessage);
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleInternalError(Exception e) {
+        return new ErrorResponse("Oooops some troubles here hihihi xyxyxy (Internal server error)");
+    }
 }
