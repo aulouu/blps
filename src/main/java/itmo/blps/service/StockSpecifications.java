@@ -2,8 +2,8 @@ package itmo.blps.service;
 
 import itmo.blps.model.Restaurant;
 import itmo.blps.model.Stock;
-import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.Join;
+import org.springframework.data.jpa.domain.Specification;
 
 public class StockSpecifications {
 

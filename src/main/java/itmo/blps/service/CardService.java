@@ -2,9 +2,11 @@ package itmo.blps.service;
 
 import itmo.blps.dto.request.CardRequest;
 import itmo.blps.dto.response.CardResponse;
-import itmo.blps.exceptions.*;
+import itmo.blps.exceptions.CardAlreadyExistsException;
+import itmo.blps.exceptions.CardNotFoundException;
+import itmo.blps.exceptions.NotValidInputException;
+import itmo.blps.exceptions.UserNotFoundException;
 import itmo.blps.model.Card;
-import itmo.blps.model.Order;
 import itmo.blps.model.User;
 import itmo.blps.repository.CardRepository;
 import itmo.blps.repository.UserRepository;
