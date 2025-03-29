@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/card")
+@RequestMapping("/api/cards")
 public class CardController {
     private final CardService cardService;
 
-    @PostMapping("/create_card")
+    @PostMapping("/create-card")
     public CardResponse createCard(@RequestBody @Valid CardRequest cardRequest) {
         String username = getCurrentUser();
         if (username == null) {
@@ -26,7 +26,7 @@ public class CardController {
         return cardService.createCard(cardRequest, username);
     }
 
-    @PostMapping("/top_up")
+    @PostMapping("/top-up")
     public CardResponse topUpBalance(@RequestParam String cardNumber, @RequestParam Double amount) {
         String username = getCurrentUser();
         if (username == null) {

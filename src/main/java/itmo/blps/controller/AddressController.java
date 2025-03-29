@@ -11,16 +11,16 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/address")
+@RequestMapping("/api/addresses")
 public class AddressController {
     private final AddressService addressService;
 
-    @GetMapping("/get_all")
+    @GetMapping
     public List<AddressResponse> getAllAddresses() {
         return addressService.getAllAddresses();
     }
 
-    @PostMapping("/create_address")
+    @PostMapping("/create-address")
     public AddressResponse createAddress(@RequestBody @Valid AddressRequest addressRequest) {
         return addressService.createAddress(addressRequest);
     }

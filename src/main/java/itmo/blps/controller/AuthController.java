@@ -30,12 +30,12 @@ public class AuthController {
         return authService.login(loginUserDto, httpSession.getId());
     }
 
-    @GetMapping("/check_auth")
+    @GetMapping("/check-auth")
     public AuthResponseDTO checkAuth(@AuthenticationPrincipal User user) {
         return authService.checkAuth(user);
     }
 
-    @PostMapping("/invalidate_session")
+    @PostMapping("/invalidate-session")
     public String invalidateSession(HttpSession session) {
         session.invalidate();
         return "Session invalidated";

@@ -17,16 +17,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/order")
+@RequestMapping("/api/orders")
 public class OrderController {
     @Autowired
     private final OrderService orderService;
     private final HttpSession httpSession;
 
-    @PostMapping("/add_product")
+    @PostMapping("/add-product")
     public OrderResponse addProductToOrder(@RequestBody ProductRequest productName, HttpSession httpSession) {
         String username = getCurrentUser();
-//        String sessionId = getCurrentSessionId();
         return orderService.addProductToOrder(productName, httpSession.getId(), username);
     }
 
@@ -39,13 +38,13 @@ public class OrderController {
         return orderService.confirmOrder(httpSession.getId(), username, confirmOrderRequest);
     }
 
-    @PostMapping("/set_address")
+    @PostMapping("/set-address")
     public OrderResponse setAddress(@RequestBody @Valid AddressRequest addressRequest) {
         String username = getCurrentUser();
         return orderService.setAddress(addressRequest, httpSession.getId(), username);
     }
 
-    @GetMapping("/get_current")
+    @GetMapping("/get-current")
     public OrderResponse getCurrentOrder(HttpSession httpSession) {
         String username = getCurrentUser();
         return orderService.getCurrentOrder(httpSession.getId(), username);
@@ -58,13 +57,4 @@ public class OrderController {
         }
         return userDetails.getUsername();
     }
-
-//    private String getCurrentSessionId() {
-//        HttpSession session = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
-//                .getRequest().getSession(false);
-//        if (session == null) {
-//            throw new IllegalStateException("Session not found");
-//        }
-//        return session.getId();
-//    }
 }
