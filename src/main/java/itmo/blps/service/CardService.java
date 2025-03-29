@@ -1,5 +1,6 @@
 package itmo.blps.service;
 
+import itmo.blps.dto.request.BalanceRequest;
 import itmo.blps.dto.request.CardRequest;
 import itmo.blps.dto.response.CardResponse;
 import itmo.blps.exceptions.CardAlreadyExistsException;
@@ -83,19 +84,19 @@ public class CardService {
         return modelMapper.map(savedCard, CardResponse.class);
     }
 
-    public CardResponse topUpBalance(String cardNumber, String username, Double amount) {
-        if (amount <= 0) {
-            throw new NotValidInputException("Amount must be positive");
+    public CardResponse topUpBalance(BalanceRequest balanceRequest, String username) {
+        if (balanceRequest.getMoney() <= 0) {
+            throw new NotValidInputException("Money must be positive");
         }
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(
                         String.format("Username %s not found", username)
                 ));
-        Card card = cardRepository.findByNumberAndUser(cardNumber, user)
+        Card card = cardRepository.findByNumberAndUser(balanceRequest.getNumber(), user)
                 .orElseThrow(() -> new CardNotFoundException(
-                        String.format("Card with number %s not found or doesn't belong to user %s. Check card number", cardNumber, username)
+                        String.format("Card with number %s not found or doesn't belong to user %s. Check card number", balanceRequest.getNumber(), username)
                 ));
-        card.setMoney(card.getMoney() + amount);
+        card.setMoney(card.getMoney() + balanceRequest.getMoney());
         Card updatedCard = cardRepository.save(card);
         return modelMapper.map(updatedCard, CardResponse.class);
     }

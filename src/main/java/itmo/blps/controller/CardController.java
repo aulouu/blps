@@ -1,5 +1,6 @@
 package itmo.blps.controller;
 
+import itmo.blps.dto.request.BalanceRequest;
 import itmo.blps.dto.request.CardRequest;
 import itmo.blps.dto.response.CardResponse;
 import itmo.blps.exceptions.UserNotAuthorizedException;
@@ -27,12 +28,12 @@ public class CardController {
     }
 
     @PostMapping("/top-up")
-    public CardResponse topUpBalance(@RequestParam String cardNumber, @RequestParam Double amount) {
+    public CardResponse topUpBalance(@RequestBody @Valid BalanceRequest balanceRequest) {
         String username = getCurrentUser();
         if (username == null) {
             throw new UserNotAuthorizedException("User is not authenticated");
         }
-        return cardService.topUpBalance(cardNumber, username, amount);
+        return cardService.topUpBalance(balanceRequest, username);
     }
 
     private String getCurrentUser() {
