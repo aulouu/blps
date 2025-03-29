@@ -36,7 +36,7 @@ public class PaymentService {
                 .orElseThrow(() -> new UserNotFoundException(
                         String.format("Username %s not found", username)
                 ));
-        Order order = orderRepository.findByUserIdAndIsConfirmedTrueAndIsPaidFalse(user.getId())
+        Order order = orderRepository.findFirstByUserIdAndIsConfirmedTrueAndIsPaidFalseOrderByCreationTimeDesc(user.getId())
                 .orElseThrow(() -> new OrderNotFoundException(
                         String.format("Order not found for payment, user %s", username)
                 ));
