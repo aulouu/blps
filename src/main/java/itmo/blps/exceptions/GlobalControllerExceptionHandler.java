@@ -135,6 +135,11 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleInternalError(Exception e) {
+        String errorMessage = String.format("Internal server error: %s", e.getMessage());
+
+        System.err.println(errorMessage);
+        e.printStackTrace();
+
         return new ErrorResponse("Oooops some troubles here hihihi xyxyxy (Internal server error)");
     }
 }
