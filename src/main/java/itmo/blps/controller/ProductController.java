@@ -2,6 +2,7 @@ package itmo.blps.controller;
 
 import itmo.blps.dto.response.StockResponse;
 import itmo.blps.service.StockService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +39,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public StockResponse getProductById(@PathVariable Long productId) {
+    public StockResponse getProductById(@RequestBody @Valid Long productId) {
         return stockService.getProductFromStockById(productId);
     }
 }

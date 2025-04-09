@@ -24,7 +24,7 @@ public class OrderController {
     private final HttpSession httpSession;
 
     @PostMapping("/add-product")
-    public OrderResponse addProductToOrder(@RequestBody ProductRequest productName, HttpSession httpSession) {
+    public OrderResponse addProductToOrder(@RequestBody @Valid ProductRequest productName, HttpSession httpSession) {
         String username = getCurrentUser();
         return orderService.addProductToOrder(productName, httpSession.getId(), username);
     }
