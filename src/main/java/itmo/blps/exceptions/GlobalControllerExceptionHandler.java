@@ -94,6 +94,12 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleOrderAlreadyConfirmedException(OrderAlreadyConfirmedException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleCardAlreadyExistsException(CardAlreadyExistsException e) {
         return new ErrorResponse(e.getMessage());

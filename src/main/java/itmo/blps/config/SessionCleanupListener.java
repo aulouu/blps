@@ -30,7 +30,7 @@ public class SessionCleanupListener implements HttpSessionListener {
         String sessionId = se.getSession().getId();
         System.out.println("Session ended: " + sessionId);
 
-        List<Order> orders = orderRepository.findByIsConfirmedFalseOrIsPaidFalse()
+        List<Order> orders = orderRepository.findByIsPaidFalse()
                 .orElse(null);
         if (orders == null) return;
         for (Order order : orders) {
@@ -48,5 +48,6 @@ public class SessionCleanupListener implements HttpSessionListener {
         }
 
         orderRepository.deleteAll(orders);
+        System.out.println("Session destroyed: " + sessionId);
     }
 }

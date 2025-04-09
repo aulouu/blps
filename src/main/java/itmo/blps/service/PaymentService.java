@@ -97,6 +97,7 @@ public class PaymentService {
                         address.getFlat().equals(order.getAddress().getFlat())
         )) {
             user.getAddresses().add(order.getAddress());
+            userRepository.save(user);
         }
         return PaymentResponse.builder()
                 .message("Payment successful")

@@ -17,7 +17,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 //    Optional<Order> findByUserIdAndIsConfirmedTrueAndIsPaidFalse(Long userId);
 
-    Optional<List<Order>> findByIsConfirmedFalseOrIsPaidFalse();
+    Optional<List<Order>> findByIsPaidFalse();
 
     Optional<Order> findFirstByUserIdOrderByCreationTimeDesc(Long userId);
 
