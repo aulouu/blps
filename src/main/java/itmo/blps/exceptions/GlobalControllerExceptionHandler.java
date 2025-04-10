@@ -154,4 +154,10 @@ public class GlobalControllerExceptionHandler {
         String errorMessage = "Invalid request format";
         return new ErrorResponse(errorMessage);
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErrorResponse handleFailTransactionException(FailTransactionException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }

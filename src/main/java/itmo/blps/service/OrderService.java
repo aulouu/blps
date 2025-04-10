@@ -7,9 +7,13 @@ import itmo.blps.dto.response.OrderResponse;
 import itmo.blps.exceptions.*;
 import itmo.blps.model.*;
 import itmo.blps.repository.*;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.UserTransaction;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.jta.JtaTransactionManager;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,6 +36,7 @@ public class OrderService {
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
     private final AddressService addressService;
+    private final JtaTransactionManager transactionManager;
 
     public static void validateDeliveryTime(String deliveryTimeInput) {
         LocalDateTime currentDateTime = LocalDateTime.now(); // Текущие дата и время
@@ -87,63 +92,81 @@ public class OrderService {
     }
 
     public OrderResponse addProductToOrder(ProductRequest productRequest, String sessionId, String username) {
-        Stock productOnStock = stockRepository.findById(productRequest.getProductId())
-                .orElseThrow(() -> new ProductNotFoundException(
-                        String.format("Product %s not found", productRequest.getProductId())
-                ));
-        if (productRequest.getCount() > productOnStock.getAmount()) {
-            throw new ProductIsOutOfStockException(String.format("Amount of %s exceeds stock", productRequest.getProductId()));
-        }
+        UserTransaction userTransaction = null;
+        try {
+            userTransaction = (UserTransaction) transactionManager.getUserTransaction();
+            userTransaction.begin();
+            Stock productOnStock = stockRepository.findById(productRequest.getProductId())
+                    .orElseThrow(() -> new ProductNotFoundException(
+                            String.format("Product %s not found", productRequest.getProductId())
+                    ));
+            if (productRequest.getCount() > productOnStock.getAmount()) {
+                throw new ProductIsOutOfStockException(String.format("Amount of %s exceeds stock", productRequest.getProductId()));
+            }
+            if (productRequest.getCount() <= 0) {
+                throw new NotValidInputException("Count must be positive")
+            }
 
-        Optional<Order> tryOrder = getActiveOrder(sessionId, username);
-        Order order;
-        if (tryOrder.isEmpty()) {
-            Optional<User> user = userRepository.findByUsername(username);
-            if (user.isPresent()) {
-                Optional<Order> checkConfirmed = orderRepository.
-                        findFirstByUserIdAndIsConfirmedTrueAndIsPaidFalseOrderByCreationTimeDesc(user.get().getId());
-                if (checkConfirmed.isPresent()) {
-                    throw new OrderAlreadyConfirmedException("Order already confirmed, you can't add products");
+            Optional<Order> tryOrder = getActiveOrder(sessionId, username);
+            Order order;
+            if (tryOrder.isEmpty()) {
+                Optional<User> user = userRepository.findByUsername(username);
+                if (user.isPresent()) {
+                    Optional<Order> checkConfirmed = orderRepository.
+                            findFirstByUserIdAndIsConfirmedTrueAndIsPaidFalseOrderByCreationTimeDesc(user.get().getId());
+                    if (checkConfirmed.isPresent()) {
+                        throw new OrderAlreadyConfirmedException("Order already confirmed, you can't add products");
+                    } else {
+                        order = createEmptyOrder(sessionId, username);
+                    }
                 } else {
                     order = createEmptyOrder(sessionId, username);
                 }
             } else {
-                order = createEmptyOrder(sessionId, username);
+                order = tryOrder.get();
             }
-        } else {
-            order = tryOrder.get();
+
+
+            if (order.getAddress() == null) {
+                throw new AddressNotProvidedException("Address not provided");
+            }
+
+            Product productInOrder = productRepository.findByProductOnStockAndOrder(productOnStock, order)
+                    .orElseGet(Product.builder().productOnStock(productOnStock).count(0.0).order(order)::build);
+
+            productOnStock.setAmount(productOnStock.getAmount() - productRequest.getCount());
+            productInOrder.setCount(productInOrder.getCount() + productRequest.getCount());
+
+            stockRepository.save(productOnStock);
+            productRepository.save(productInOrder);
+
+            Optional<Product> exist = order.getProducts().stream()
+                    .filter(p -> Objects.equals(p.getId(), productInOrder.getId()))
+                    .findFirst();
+
+            if (exist.isEmpty()) {
+                order.getProducts().add(productInOrder);
+            }
+
+            double totalCost = order.getProducts().stream()
+                    .mapToDouble(p -> productOnStock.getPrice() * productInOrder.getCount())
+                    .sum();
+            order.setCost(totalCost);
+
+            order = orderRepository.save(order);
+
+            userTransaction.commit();
+            return modelMapper.map(order, OrderResponse.class);
+        } catch (Exception e) {
+            try {
+                if (userTransaction != null) {
+                    userTransaction.rollback();
+                }
+            } catch (SystemException ex) {
+                throw new FailTransactionException("Failed to rollback transaction");
+            }
+            throw new FailTransactionException("Transaction failed");
         }
-
-
-        if (order.getAddress() == null) {
-            throw new AddressNotProvidedException("Address not provided");
-        }
-
-        Product productInOrder = productRepository.findByProductOnStockAndOrder(productOnStock, order)
-                .orElseGet(Product.builder().productOnStock(productOnStock).count(0.0).order(order)::build);
-
-        productOnStock.setAmount(productOnStock.getAmount() - productRequest.getCount());
-        productInOrder.setCount(productInOrder.getCount() + productRequest.getCount());
-
-        stockRepository.save(productOnStock);
-        productRepository.save(productInOrder);
-
-        Optional<Product> exist = order.getProducts().stream()
-                .filter(p -> Objects.equals(p.getId(), productInOrder.getId()))
-                .findFirst();
-
-        if (exist.isEmpty()) {
-            order.getProducts().add(productInOrder);
-        }
-
-        double totalCost = order.getProducts().stream()
-                .mapToDouble(p -> productOnStock.getPrice() * productInOrder.getCount())
-                .sum();
-        order.setCost(totalCost);
-
-        order = orderRepository.save(order);
-
-        return modelMapper.map(order, OrderResponse.class);
     }
 
     public OrderResponse confirmOrder(String sessionId, String username, ConfirmOrderRequest confirmOrderRequest) {
