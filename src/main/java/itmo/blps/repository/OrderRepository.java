@@ -15,11 +15,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Optional<Order> findFirstByUserIdAndIsConfirmedTrueAndIsPaidFalseOrderByCreationTimeDesc(Long userId);
 
-//    Optional<Order> findByUserIdAndIsConfirmedTrueAndIsPaidFalse(Long userId);
-
     Optional<List<Order>> findByIsPaidFalse();
+
+    List<Order> findAllByIsPaidTrue();
+
+    List<Order> findAllByIsConfirmedTrue();
 
     Optional<Order> findFirstByUserIdOrderByCreationTimeDesc(Long userId);
 
-    Optional<Order> findFirstBySessionIdOrderByCreationTimeDesc(String userId);
+    Optional<Order> findFirstBySessionIdOrderByCreationTimeDesc(String sessionId);
 }

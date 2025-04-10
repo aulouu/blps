@@ -5,6 +5,7 @@ import itmo.blps.dto.auth.LoginUserDTO;
 import itmo.blps.dto.auth.RegisterUserDTO;
 import itmo.blps.exceptions.UserAlreadyExistException;
 import itmo.blps.exceptions.UserNotFoundException;
+import itmo.blps.model.Role;
 import itmo.blps.model.User;
 import itmo.blps.repository.UserRepository;
 import itmo.blps.security.jwt.JwtUtils;
@@ -33,6 +34,7 @@ public class AuthService {
                 .builder()
                 .username(registerUserDto.getUsername())
                 .password(passwordEncoder.encode(registerUserDto.getPassword()))
+                .role(Role.USER)
                 .build();
 
         user = userRepository.save(user);

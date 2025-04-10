@@ -1,5 +1,6 @@
 package itmo.blps.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +38,12 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "address_id")
     )
     @Builder.Default
+    @JsonManagedReference
     private List<Address> addresses = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private Role role;
 
     @Override
     public boolean isAccountNonExpired() {

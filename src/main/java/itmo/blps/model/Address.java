@@ -1,10 +1,13 @@
 package itmo.blps.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Entity
@@ -34,4 +37,8 @@ public class Address {
 
     @Column(nullable = false)
     private Integer flat;
+
+    @ManyToMany(mappedBy = "addresses")
+    @JsonBackReference
+    private List<User> users;
 }

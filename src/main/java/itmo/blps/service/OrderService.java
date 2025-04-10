@@ -15,8 +15,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static itmo.blps.service.AddressService.validateAddressRequest;
 
@@ -102,12 +104,10 @@ public class OrderService {
                         findFirstByUserIdAndIsConfirmedTrueAndIsPaidFalseOrderByCreationTimeDesc(user.get().getId());
                 if (checkConfirmed.isPresent()) {
                     throw new OrderAlreadyConfirmedException("Order already confirmed, you can't add products");
-                }
-                else {
+                } else {
                     order = createEmptyOrder(sessionId, username);
                 }
-            }
-            else {
+            } else {
                 order = createEmptyOrder(sessionId, username);
             }
         } else {
@@ -159,8 +159,7 @@ public class OrderService {
                     findFirstByUserIdAndIsConfirmedTrueAndIsPaidFalseOrderByCreationTimeDesc(user.getId());
             if (checkConfirmed.isPresent()) {
                 throw new OrderAlreadyConfirmedException("Order already confirmed");
-            }
-            else {
+            } else {
                 order = createEmptyOrder(sessionId, username);
             }
         } else {
@@ -255,5 +254,19 @@ public class OrderService {
             order = Order.builder().sessionId(sessionId).cost(0.0).isConfirmed(false).isPaid(false).creationTime(LocalDateTime.now()).build();
         }
         return order;
+    }
+
+    public List<OrderResponse> getAllPaidOrders() {
+        List<Order> paidOrders = orderRepository.findAllByIsPaidTrue();
+        return paidOrders.stream()
+                .map(order -> modelMapper.map(order, OrderResponse.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<OrderResponse> getAllConfirmedOrders() {
+        List<Order> paidOrders = orderRepository.findAllByIsConfirmedTrue();
+        return paidOrders.stream()
+                .map(order -> modelMapper.map(order, OrderResponse.class))
+                .collect(Collectors.toList());
     }
 }

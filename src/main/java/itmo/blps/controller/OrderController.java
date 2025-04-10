@@ -15,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/orders")
@@ -48,6 +50,24 @@ public class OrderController {
     public OrderResponse getCurrentOrder(HttpSession httpSession) {
         String username = getCurrentUser();
         return orderService.getCurrentOrder(httpSession.getId(), username);
+    }
+
+    @GetMapping("/get-paid-orders")
+    public List<OrderResponse> getPaidOrders() {
+        String username = getCurrentUser();
+        if (username == null) {
+            throw new UserNotAuthorizedException("User is not authenticated");
+        }
+        return orderService.getAllPaidOrders();
+    }
+
+    @GetMapping("/get-confirmed-orders")
+    public List<OrderResponse> getConfirmedOrders() {
+        String username = getCurrentUser();
+        if (username == null) {
+            throw new UserNotAuthorizedException("User is not authenticated");
+        }
+        return orderService.getAllConfirmedOrders();
     }
 
     private String getCurrentUser() {

@@ -5,8 +5,11 @@ import itmo.blps.dto.response.AddressResponse;
 import itmo.blps.exceptions.AddressAlreadyExistsException;
 import itmo.blps.exceptions.AddressNotFoundException;
 import itmo.blps.exceptions.NotValidInputException;
+import itmo.blps.exceptions.UserNotFoundException;
 import itmo.blps.model.Address;
+import itmo.blps.model.User;
 import itmo.blps.repository.AddressRepository;
+import itmo.blps.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -18,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AddressService {
     private final AddressRepository addressRepository;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
     public static void validateAddressRequest(AddressRequest addressRequest) throws IllegalArgumentException {
@@ -43,6 +47,16 @@ public class AddressService {
 
     public List<AddressResponse> getAllAddresses() {
         List<Address> addresses = addressRepository.findAll();
+        return modelMapper.map(addresses, new TypeToken<List<AddressResponse>>() {
+        }.getType());
+    }
+
+    public List<AddressResponse> getUserAddresses(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(
+                        String.format("Username %s not found", username)
+                ));
+        List<Address> addresses = addressRepository.findByUsersId(user.getId());
         return modelMapper.map(addresses, new TypeToken<List<AddressResponse>>() {
         }.getType());
     }

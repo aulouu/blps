@@ -1,8 +1,10 @@
 package itmo.blps.security;
 
+import itmo.blps.model.Permission;
 import itmo.blps.security.jwt.JwtAuthEntryPoint;
 import itmo.blps.security.jwt.JwtAuthTokenFilter;
 import itmo.blps.security.service.AuthUserDetailsService;
+import itmo.blps.security.service.CustomAccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,35 +28,50 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
     private final JwtAuthTokenFilter jwtAuthTokenFilter;
-
     private final AuthUserDetailsService userDetailsService;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(new JwtAuthEntryPoint()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        // .authorizeHttpRequests(auth -> auth.requestMatchers("/index.html", "/favicon.ico", "/static/**").permitAll()
-        //       .requestMatchers("/auth/**", "/user/role/**", "/ws", "/").permitAll()
-        //       .requestMatchers(HttpMethod.GET, "/admin/**").hasRole("ADMIN")
-        //       .requestMatchers(HttpMethod.PUT, "/admin/**").hasRole("ADMIN")
-        //       .anyRequest().authenticated());
-
-        http.authenticationProvider(authenticationProvider());
+    public SecurityFilterChain filterChain(HttpSecurity http, CustomAccessDeniedHandler customAccessDeniedHandler) throws Exception {
         http
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/invalidate-session").permitAll()
+                        .requestMatchers("/auth/register").permitAll()
+                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/api/payment/pay").hasAuthority(Permission.PAY_ORDER.name())
+                        .requestMatchers("/api/orders/set-address").permitAll()
+                        .requestMatchers("/api/orders/confirm").hasAuthority(Permission.CONFIRM_ORDER.name())
+                        .requestMatchers("/api/orders/add-product").permitAll()
+                        .requestMatchers("/api/orders/get-paid-orders").hasAuthority(Permission.VIEW_ALL_PAID_ORDERS.name())
+                        .requestMatchers("/api/orders/get-confirmed-orders").hasAuthority(Permission.VIEW_ALL_CONFIRMED_ORDERS.name())
+                        .requestMatchers("/api/orders/get-current").permitAll()
+                        .requestMatchers("/api/cards/top-up").hasAuthority(Permission.TOP_UP_BALANCE.name())
+                        .requestMatchers("/api/cards/create-card").hasAuthority(Permission.CREATE_CARD.name())
+                        .requestMatchers("/api/addresses/create-address").permitAll()
+                        .requestMatchers("/api/addresses/get-user-addresses").hasAuthority(Permission.VIEW_CURRENT_ADDRESSES.name())
+                        .requestMatchers("/api/addresses").hasAuthority(Permission.VIEW_ALL_ADDRESSES.name())
+                        .requestMatchers("/api/products").permitAll()
+                        .requestMatchers("/api/products/{productId}").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(new JwtAuthEntryPoint())
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                )
                 .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtAuthTokenFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+//        configuration.setAllowedOrigins(List.of("http://localhost:24680"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "from", "size"));
         configuration.setAllowCredentials(true);
