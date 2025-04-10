@@ -94,8 +94,8 @@ public class OrderService {
     public OrderResponse addProductToOrder(ProductRequest productRequest, String sessionId, String username) {
         UserTransaction userTransaction = null;
         try {
-            userTransaction = (UserTransaction) transactionManager.getUserTransaction();
-            userTransaction.begin();
+            userTransaction = transactionManager.getUserTransaction();
+            if (userTransaction != null) userTransaction.begin();
             Stock productOnStock = stockRepository.findById(productRequest.getProductId())
                     .orElseThrow(() -> new ProductNotFoundException(
                             String.format("Product %s not found", productRequest.getProductId())
@@ -104,7 +104,7 @@ public class OrderService {
                 throw new ProductIsOutOfStockException(String.format("Amount of %s exceeds stock", productRequest.getProductId()));
             }
             if (productRequest.getCount() <= 0) {
-                throw new NotValidInputException("Count must be positive")
+                throw new NotValidInputException("Count must be positive");
             }
 
             Optional<Order> tryOrder = getActiveOrder(sessionId, username);
@@ -155,7 +155,7 @@ public class OrderService {
 
             order = orderRepository.save(order);
 
-            userTransaction.commit();
+            if (userTransaction != null) userTransaction.commit();
             return modelMapper.map(order, OrderResponse.class);
         } catch (Exception e) {
             try {
