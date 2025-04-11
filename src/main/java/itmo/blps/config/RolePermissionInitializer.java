@@ -46,7 +46,8 @@ public class RolePermissionInitializer {
                 Permission.CONFIRM_ORDER,
                 Permission.ADD_PRODUCT,
                 Permission.CREATE_CARD,
-                Permission.TOP_UP_BALANCE));
+                Permission.TOP_UP_BALANCE,
+                Permission.CREATE_ADMIN_REQUEST));
 
         rolePermissions.put(Role.ADMIN, EnumSet.of(
                 Permission.VIEW_ALL_PAID_ORDERS,
@@ -62,7 +63,9 @@ public class RolePermissionInitializer {
                 Permission.CONFIRM_ORDER,
                 Permission.ADD_PRODUCT,
                 Permission.CREATE_CARD,
-                Permission.TOP_UP_BALANCE
+                Permission.TOP_UP_BALANCE,
+                Permission.VIEW_ADMIN_REQUESTS,
+                Permission.APPROVE_ADMIN_REQUEST
         ));
 
         rolePermissions.forEach((role, permissions) -> {

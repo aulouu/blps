@@ -104,7 +104,7 @@ public class OrderService {
                 throw new ProductIsOutOfStockException(String.format("Amount of %s exceeds stock", productRequest.getProductId()));
             }
             if (productRequest.getCount() <= 0) {
-                throw new NotValidInputException("Count must be positive")
+                throw new NotValidInputException("Count must be positive");
             }
 
             Optional<Order> tryOrder = getActiveOrder(sessionId, username);
