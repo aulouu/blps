@@ -90,8 +90,8 @@ public class OrderService {
     }
 
     public OrderResponse addProductToOrder(ProductRequest productRequest, String sessionId, String username) {
-        try {
-            transactionManager.begin();
+//        try {
+//            transactionManager.begin();
             Stock productOnStock = stockRepository.findById(productRequest.getProductId())
                     .orElseThrow(() -> new ProductNotFoundException(
                             String.format("Product %s not found", productRequest.getProductId())
@@ -149,18 +149,18 @@ public class OrderService {
                     .sum();
             order.setCost(totalCost);
 
-            order = orderRepository.save(order);
+            orderRepository.save(order);
 
-            transactionManager.commit();
+//            transactionManager.commit();
             return modelMapper.map(order, OrderResponse.class);
-        } catch (Exception e) {
-            try {
-                transactionManager.rollback();
-            } catch (SystemException ex) {
-                throw new FailTransactionException(String.format("Failed to rollback transaction: %s", ex.getMessage()));
-            }
-            throw new FailTransactionException(String.format("Transaction failed: %s", e.getMessage()));
-        }
+//        } catch (Exception e) {
+//            try {
+//                transactionManager.rollback();
+//            } catch (SystemException ex) {
+//                throw new FailTransactionException(String.format("Failed to rollback transaction: %s", ex.getMessage()));
+//            }
+//            throw new FailTransactionException(String.format("Transaction failed: %s", e.getMessage()));
+//        }
     }
 
     public OrderResponse confirmOrder(String sessionId, String username, ConfirmOrderRequest confirmOrderRequest) {
