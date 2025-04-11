@@ -8,10 +8,8 @@ import itmo.blps.service.AuthService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -29,6 +27,11 @@ public class AuthController {
     @SecurityRequirements
     public AuthResponseDTO login(@RequestBody @Valid LoginUserDTO loginUserDto, HttpSession httpSession) {
         return authService.login(loginUserDto, httpSession.getId());
+    }
+
+    @GetMapping("/user")
+    public Authentication getUser(Authentication authentication) {
+        return authentication;
     }
 
 //    @GetMapping("/check-auth")

@@ -1,6 +1,6 @@
 package itmo.blps.security.jwt;
 
-import itmo.blps.security.service.AuthUserDetailsService;
+import itmo.blps.security.jaas.JaasAuthorityGranter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,22 +11,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.security.Principal;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthTokenFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthTokenFilter.class);
-    @Autowired
-    private JwtUtils jwtUtils;
-    @Autowired
-    private AuthUserDetailsService userDetailsService;
+    private final JwtUtils jwtUtils;
+    private final JaasAuthorityGranter jaasAuthorityGranter;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -57,7 +60,18 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
-        return userDetailsService.loadUserByUsername(username);
+        Set<String> authorities = jaasAuthorityGranter.grant(new Principal() {
+            @Override
+            public String getName() {
+                return username;
+            }
+        });
+
+        // Создаем UserDetails на основе информации из JWT и JAAS
+        return User.withUsername(username)
+                .password("") // Пароль не нужен для JWT аутентификации
+                .authorities(authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()))
+                .build();
     }
 
     public String parseJwt(HttpServletRequest request) {

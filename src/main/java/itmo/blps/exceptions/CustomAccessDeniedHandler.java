@@ -1,4 +1,4 @@
-package itmo.blps.security.service;
+package itmo.blps.exceptions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;

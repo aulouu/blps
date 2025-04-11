@@ -1,15 +1,21 @@
 package itmo.blps.security;
 
+import itmo.blps.exceptions.CustomAccessDeniedHandler;
 import itmo.blps.model.Permission;
+import itmo.blps.repository.UserRepository;
+import itmo.blps.security.jaas.JaasAuthorityGranter;
+import itmo.blps.security.jaas.JaasLoginModule;
 import itmo.blps.security.jwt.JwtAuthEntryPoint;
 import itmo.blps.security.jwt.JwtAuthTokenFilter;
-import itmo.blps.security.service.AuthUserDetailsService;
-import itmo.blps.security.service.CustomAccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.jaas.AuthorityGranter;
+import org.springframework.security.authentication.jaas.DefaultJaasAuthenticationProvider;
+import org.springframework.security.authentication.jaas.memory.InMemoryConfiguration;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,14 +28,16 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.security.auth.login.AppConfigurationEntry;
 import java.util.List;
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthTokenFilter jwtAuthTokenFilter;
-    private final AuthUserDetailsService userDetailsService;
+    private final UserRepository userRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, CustomAccessDeniedHandler customAccessDeniedHandler) throws Exception {
@@ -37,8 +45,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider())
+                .authenticationProvider(jaasAuthenticationProvider(configuration()))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/user").permitAll()
                         .requestMatchers("/auth/invalidate-session").permitAll()
                         .requestMatchers("/auth/register").permitAll()
                         .requestMatchers("/auth/login").permitAll()
@@ -66,7 +75,6 @@ public class SecurityConfig {
                         .authenticationEntryPoint(new JwtAuthEntryPoint())
                         .accessDeniedHandler(customAccessDeniedHandler)
                 )
-                .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtAuthTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -85,13 +93,21 @@ public class SecurityConfig {
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+    public InMemoryConfiguration configuration() {
+        AppConfigurationEntry configEntry = new AppConfigurationEntry(JaasLoginModule.class.getName(),
+                AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
+                Map.of("userRepository", userRepository));
+        var configurationEntries = new AppConfigurationEntry[]{configEntry};
+        return new InMemoryConfiguration(Map.of("SPRINGSECURITY", configurationEntries));
+    }
 
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-
-        return authProvider;
+    @Bean
+    @Qualifier
+    public AuthenticationProvider jaasAuthenticationProvider(javax.security.auth.login.Configuration configuration) {
+        var provider = new DefaultJaasAuthenticationProvider();
+        provider.setConfiguration(configuration);
+        provider.setAuthorityGranters(new AuthorityGranter[]{new JaasAuthorityGranter(userRepository)});
+        return provider;
     }
 
     @Bean
