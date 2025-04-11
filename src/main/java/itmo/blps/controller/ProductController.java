@@ -1,6 +1,7 @@
 package itmo.blps.controller;
 
 import itmo.blps.dto.response.StockResponse;
+import itmo.blps.exceptions.InvalidRequestException;
 import itmo.blps.service.StockService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,13 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public StockResponse getProductById(@RequestBody @Valid Long productId) {
-        return stockService.getProductFromStockById(productId);
+    public StockResponse getProductById(@PathVariable @Valid String productId) {
+        Long id;
+        try {
+            id = Long.parseLong(productId);
+        } catch (NumberFormatException e) {
+            throw new InvalidRequestException("Invalid product ID format");
+        }
+        return stockService.getProductFromStockById(id);
     }
 }

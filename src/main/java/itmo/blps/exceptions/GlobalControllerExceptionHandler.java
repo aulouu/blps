@@ -3,6 +3,7 @@ package itmo.blps.exceptions;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.messaging.handler.annotation.support.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -141,23 +142,6 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        List<String> errors = e.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(error -> String.format(
-                        "Ошибка валидации поля '%s': %s (текущее значение: '%s')",
-                        error.getField(),
-                        error.getDefaultMessage(),
-                        error.getRejectedValue() == null ? "пусто" : error.getRejectedValue()))
-                .collect(Collectors.toList());
-
-        String errorMessage = "Ошибка валидации:\n" + String.join("\n", errors);
-        return new ErrorResponse(errorMessage);
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleInternalError(Exception e) {
         String errorMessage = String.format("Internal server error: %s", e.getMessage());
@@ -171,6 +155,12 @@ public class GlobalControllerExceptionHandler {
     public ErrorResponse handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
         String errorMessage = "Invalid request format";
         return new ErrorResponse(errorMessage);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvalidRequest(InvalidRequestException e) {
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler

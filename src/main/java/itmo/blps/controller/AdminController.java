@@ -1,6 +1,7 @@
 package itmo.blps.controller;
 
 import itmo.blps.dto.response.AdminResponse;
+import itmo.blps.exceptions.InvalidRequestException;
 import itmo.blps.exceptions.UserNotAuthorizedException;
 import itmo.blps.service.AdminService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,12 +39,18 @@ public class AdminController {
     }
 
     @PutMapping("/approve/{adminRequestId}")
-    public void approveOnAdminRequest(@RequestBody @Valid Long adminRequestId) {
+    public void approveOnAdminRequest(@PathVariable @Valid String adminRequestId) {
         String username = getCurrentUser();
         if (username == null) {
             throw new UserNotAuthorizedException("User is not authenticated");
         }
-        adminService.approveOnAdminRequest(adminRequestId);
+        Long id;
+        try {
+            id = Long.parseLong(adminRequestId);
+        } catch (NumberFormatException e) {
+            throw new InvalidRequestException("Invalid admin request ID format");
+        }
+        adminService.approveOnAdminRequest(id);
     }
 
     private String getCurrentUser() {
