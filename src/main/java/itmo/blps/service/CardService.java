@@ -9,8 +9,7 @@ import itmo.blps.model.Card;
 import itmo.blps.model.User;
 import itmo.blps.repository.CardRepository;
 import itmo.blps.repository.UserRepository;
-import jakarta.transaction.SystemException;
-import jakarta.transaction.UserTransaction;
+import jakarta.transaction.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -18,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.jta.JtaTransactionManager;
 
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -32,7 +30,7 @@ public class CardService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final BankServiceClient bankServiceClient;
-    private final JtaTransactionManager transactionManager;
+    private final TransactionManager transactionManager;
 
     public static void validateCardRequest(CardRequest cardRequest) throws IllegalArgumentException {
         if (cardRequest.getNumber() == null || cardRequest.getNumber().length() != 16 || !cardRequest.getNumber().matches("^[0-9]+$")) {
@@ -72,28 +70,43 @@ public class CardService {
 //    }
 
     public CardResponse createCard(CardRequest cardRequest, String username) {
-        validateCardRequest(cardRequest);
-        if (cardRepository.existsByNumber(cardRequest.getNumber())) {
-            throw new CardAlreadyExistsException("Card already exists. Check card number");
+        try {
+            transactionManager.begin();
+            validateCardRequest(cardRequest);
+            if (cardRepository.existsByNumber(cardRequest.getNumber())) {
+                throw new CardAlreadyExistsException("Card already exists. Check card number");
+            }
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new UserNotFoundException(
+                            String.format("Username %s not found", username)
+                    ));
+            Card card = modelMapper.map(cardRequest, Card.class);
+            card.setUser(user);
+            String hashedCvv = new BCryptPasswordEncoder().encode(cardRequest.getCvv());
+            card.setCvv(hashedCvv);
+            card.setMoney(0.0);
+
+            Card savedCard = cardRepository.save(card);
+            ResponseEntity<String> resp = bankServiceClient.createCard(cardRequest.getNumber());
+            if (resp.getStatusCode() != HttpStatus.OK) {
+                throw new FailTransactionException("Bank operation failed");
+            }
+
+            transactionManager.commit();
+            return modelMapper.map(savedCard, CardResponse.class);
+        } catch (Exception e) {
+            try {
+                transactionManager.rollback();
+            } catch (SystemException ex) {
+                throw new FailTransactionException(String.format("Failed to rollback transaction: %s", ex.getMessage()));
+            }
+            throw new FailTransactionException(String.format("Transaction failed: %s", e.getMessage()));
         }
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(
-                        String.format("Username %s not found", username)
-                ));
-        Card card = modelMapper.map(cardRequest, Card.class);
-        card.setUser(user);
-        String hashedCvv = new BCryptPasswordEncoder().encode(cardRequest.getCvv());
-        card.setCvv(hashedCvv);
-        card.setMoney(0.0);
-        Card savedCard = cardRepository.save(card);
-        return modelMapper.map(savedCard, CardResponse.class);
     }
 
     public CardResponse topUpBalance(BalanceRequest balanceRequest, String username) {
-        UserTransaction userTransaction = null;
         try {
-            userTransaction = (UserTransaction) transactionManager.getUserTransaction();
-            if (userTransaction != null) userTransaction.begin();
+            transactionManager.begin();
             if (balanceRequest.getMoney() <= 0) {
                 throw new NotValidInputException("Money must be positive");
             }
@@ -106,15 +119,16 @@ public class CardService {
                             String.format("Card with number %s not found or doesn't belong to user %s. Check card number", balanceRequest.getNumber(), username)
                     ));
             ResponseEntity<String> resp = bankServiceClient.withdraw(balanceRequest.getNumber(), balanceRequest.getMoney());
-            if (resp.getStatusCode() == HttpStatus.OK) {
+            if (resp.getStatusCode() != HttpStatus.OK) {
                 throw new FailTransactionException("Bank operation failed");
             }
             card.setMoney(card.getMoney() + balanceRequest.getMoney());
             Card updatedCard = cardRepository.save(card);
+            transactionManager.commit();
             return modelMapper.map(updatedCard, CardResponse.class);
         } catch (Exception e) {
             try {
-                if (userTransaction != null) userTransaction.rollback();
+                transactionManager.rollback();
             } catch (SystemException ex) {
                 throw new FailTransactionException(String.format("Failed to rollback transaction: %s", ex.getMessage()));
             }

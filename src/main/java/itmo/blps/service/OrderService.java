@@ -8,12 +8,10 @@ import itmo.blps.exceptions.*;
 import itmo.blps.model.*;
 import itmo.blps.repository.*;
 import jakarta.transaction.SystemException;
-import jakarta.transaction.UserTransaction;
+import jakarta.transaction.TransactionManager;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionException;
-import org.springframework.transaction.jta.JtaTransactionManager;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,7 +34,7 @@ public class OrderService {
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
     private final AddressService addressService;
-    private final JtaTransactionManager transactionManager;
+    private final TransactionManager transactionManager;
 
     public static void validateDeliveryTime(String deliveryTimeInput) {
         LocalDateTime currentDateTime = LocalDateTime.now(); // Текущие дата и время
@@ -92,10 +90,8 @@ public class OrderService {
     }
 
     public OrderResponse addProductToOrder(ProductRequest productRequest, String sessionId, String username) {
-        UserTransaction userTransaction = null;
         try {
-            userTransaction = transactionManager.getUserTransaction();
-            if (userTransaction != null) userTransaction.begin();
+            transactionManager.begin();
             Stock productOnStock = stockRepository.findById(productRequest.getProductId())
                     .orElseThrow(() -> new ProductNotFoundException(
                             String.format("Product %s not found", productRequest.getProductId())
@@ -155,17 +151,15 @@ public class OrderService {
 
             order = orderRepository.save(order);
 
-            if (userTransaction != null) userTransaction.commit();
+            transactionManager.commit();
             return modelMapper.map(order, OrderResponse.class);
         } catch (Exception e) {
             try {
-                if (userTransaction != null) {
-                    userTransaction.rollback();
-                }
+                transactionManager.rollback();
             } catch (SystemException ex) {
-                throw new FailTransactionException("Failed to rollback transaction");
+                throw new FailTransactionException(String.format("Failed to rollback transaction: %s", ex.getMessage()));
             }
-            throw new FailTransactionException("Transaction failed");
+            throw new FailTransactionException(String.format("Transaction failed: %s", e.getMessage()));
         }
     }
 

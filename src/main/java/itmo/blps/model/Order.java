@@ -43,15 +43,15 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
-    @Column(nullable = true, unique = true)
+    @Column(nullable = true, unique = true, name = "session_id")
     private String sessionId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "is_confirmed")
     private Boolean isConfirmed = false;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "is_paid")
     private Boolean isPaid = false;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "creation_time")
     private LocalDateTime creationTime = now();
 }
