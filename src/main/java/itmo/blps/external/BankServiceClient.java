@@ -39,9 +39,8 @@ public class BankServiceClient {
         HttpEntity<BalanceRequest> entity = new HttpEntity<>(request, headers);
 
         // 5. Отправка запроса
-        ResponseEntity<String> response = restTemplate.exchange(
+        ResponseEntity<String> response = restTemplate.postForEntity(
                 url,
-                HttpMethod.POST,
                 entity,
                 String.class
         );
