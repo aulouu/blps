@@ -1,6 +1,7 @@
 package itmo.blps.dto.response;
 
 import itmo.blps.model.Restaurant;
+import itmo.blps.model.Stock;
 import lombok.*;
 
 @Data
@@ -9,9 +10,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductResponse {
-    private Long id;
-    private String name;
-    private Double price;
     private Double count;
-    private Restaurant restaurant;
+    private Stock productOnStock;
 }

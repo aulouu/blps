@@ -29,16 +29,6 @@ public class AuthController {
         return authService.login(loginUserDto, httpSession.getId());
     }
 
-    @GetMapping("/user")
-    public Authentication getUser(Authentication authentication) {
-        return authentication;
-    }
-
-//    @GetMapping("/check-auth")
-//    public AuthResponseDTO checkAuth(@AuthenticationPrincipal User user) {
-//        return authService.checkAuth(user);
-//    }
-
     @PostMapping("/invalidate-session")
     public String invalidateSession(HttpSession session) {
         session.invalidate();

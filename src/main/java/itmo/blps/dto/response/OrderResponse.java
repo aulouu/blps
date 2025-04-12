@@ -16,7 +16,7 @@ public class OrderResponse {
     private Double cost;
     private Address address;
     private UserResponse user;
-    private List<Product> products;
+    private List<ProductResponse> products;
     private String deliveryTime;
     private Integer utensilsCount;
 }
