@@ -33,7 +33,6 @@ public class OrderService {
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
     private final AddressService addressService;
-    private final TransactionManager transactionManager;
 
     public static void validateDeliveryTime(String deliveryTimeInput) {
         LocalDateTime currentDateTime = LocalDateTime.now(); // Текущие дата и время
@@ -86,8 +85,6 @@ public class OrderService {
     }
 
     public OrderResponse addProductToOrder(ProductRequest productRequest, String sessionId, String username) {
-//        try {
-//            transactionManager.begin();
         Stock productOnStock = stockRepository.findById(productRequest.getProductId())
                 .orElseThrow(() -> new ProductNotFoundException(
                         String.format("Product %s not found", productRequest.getProductId())
@@ -146,16 +143,7 @@ public class OrderService {
 
         orderRepository.save(order);
 
-//            transactionManager.commit();
         return modelMapper.map(order, OrderResponse.class);
-//        } catch (Exception e) {
-//            try {
-//                transactionManager.rollback();
-//            } catch (SystemException ex) {
-//                throw new FailTransactionException(String.format("Failed to rollback transaction: %s", ex.getMessage()));
-//            }
-//            throw new FailTransactionException(String.format("Transaction failed: %s", e.getMessage()));
-//        }
     }
 
     public OrderResponse confirmOrder(String sessionId, String username, ConfirmOrderRequest confirmOrderRequest) {

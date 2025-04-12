@@ -13,13 +13,13 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@EnableTransactionManagement
 @RequiredArgsConstructor
 public class TransactionConfiguration {
     private final Environment environment;
@@ -49,9 +49,7 @@ public class TransactionConfiguration {
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-            JpaVendorAdapter jpaVendorAdapter,
-            UserTransactionManager userTransactionManager) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(JpaVendorAdapter jpaVendorAdapter) {
 
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setJtaDataSource(dataSource());
@@ -66,7 +64,7 @@ public class TransactionConfiguration {
         return em;
     }
 
-    @Bean(initMethod = "init", destroyMethod = "close")
+    @Bean
     public UserTransactionManager userTransactionManager() {
         System.setProperty("com.atomikos.icatch.log_base_dir", "./atomikos-logs/orders-service");
         System.setProperty("com.atomikos.icatch.log_base_name", "tmlog-orders");

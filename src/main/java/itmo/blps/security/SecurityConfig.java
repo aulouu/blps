@@ -47,7 +47,6 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(jaasAuthenticationProvider(configuration()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/user").permitAll()
                         .requestMatchers("/auth/invalidate-session").permitAll()
                         .requestMatchers("/auth/register").permitAll()
                         .requestMatchers("/auth/login").permitAll()
