@@ -9,7 +9,8 @@ import itmo.blps.model.Card;
 import itmo.blps.model.User;
 import itmo.blps.repository.CardRepository;
 import itmo.blps.repository.UserRepository;
-import jakarta.transaction.*;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.TransactionManager;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -53,21 +54,6 @@ public class CardService {
             throw new NotValidInputException("CVV must have 3 numbers");
         }
     }
-
-    public List<CardResponse> getAllCards() {
-        List<Card> cards = cardRepository.findAll();
-        return modelMapper.map(cards, new TypeToken<List<CardResponse>>() {
-        }.getType());
-    }
-
-//    public CardResponse getCardById(Long id) {
-//        if (!cardRepository.existsById(id)) {
-//            throw new CardNotFoundException(
-//                    String.format("Card with id %d not found", id)
-//            );
-//        }
-//        return modelMapper.map(cardRepository.findById(id), CardResponse.class);
-//    }
 
     public CardResponse createCard(CardRequest cardRequest, String username) {
         try {

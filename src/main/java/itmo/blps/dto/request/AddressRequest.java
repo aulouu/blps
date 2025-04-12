@@ -16,5 +16,4 @@ public class AddressRequest {
     private Integer entrance;
     private Integer floor;
     private Integer flat;
-
 }

@@ -4,12 +4,10 @@ import itmo.blps.dto.request.BalanceRequest;
 import itmo.blps.dto.request.CardRequest;
 import itmo.blps.dto.response.CardResponse;
 import itmo.blps.exceptions.UserNotAuthorizedException;
+import itmo.blps.security.SecurityUtils;
 import itmo.blps.service.CardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,10 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/cards")
 public class CardController {
     private final CardService cardService;
+    private final SecurityUtils securityUtils;
 
     @PostMapping("/create-card")
     public CardResponse createCard(@RequestBody @Valid CardRequest cardRequest) {
-        String username = getCurrentUser();
+        String username = securityUtils.getCurrentUser();
         if (username == null) {
             throw new UserNotAuthorizedException("User is not authenticated");
         }
@@ -32,18 +31,10 @@ public class CardController {
 
     @PostMapping("/top-up")
     public CardResponse topUpBalance(@RequestBody @Valid BalanceRequest balanceRequest) {
-        String username = getCurrentUser();
+        String username = securityUtils.getCurrentUser();
         if (username == null) {
             throw new UserNotAuthorizedException("User is not authenticated");
         }
         return cardService.topUpBalance(balanceRequest, username);
-    }
-
-    private String getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || auth.getPrincipal() == null || !(auth.getPrincipal() instanceof UserDetails userDetails)) {
-            return null;
-        }
-        return userDetails.getUsername();
     }
 }

@@ -61,15 +61,6 @@ public class AddressService {
         }.getType());
     }
 
-    public AddressResponse getAddressById(Long id) {
-        if (!addressRepository.existsById(id)) {
-            throw new AddressNotFoundException(
-                    String.format("Address with id %d not found", id)
-            );
-        }
-        return modelMapper.map(addressRepository.findById(id), AddressResponse.class);
-    }
-
     public AddressResponse createAddress(AddressRequest addressRequest) {
         validateAddressRequest(addressRequest);
         if (addressRepository.existsByCityAndStreetAndBuildingAndEntranceAndFloorAndFlat(

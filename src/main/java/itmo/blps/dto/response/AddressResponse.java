@@ -15,5 +15,4 @@ public class AddressResponse {
     private Integer entrance;
     private Integer floor;
     private Integer flat;
-
 }

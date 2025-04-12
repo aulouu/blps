@@ -14,7 +14,6 @@ import java.util.Map;
 
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
-
     @Override
     public void handle(HttpServletRequest request,
                        HttpServletResponse response,

@@ -24,7 +24,6 @@ public class SessionCleanupListener implements HttpSessionListener {
     @Autowired
     private StockRepository stockRepository;
 
-    //    @Transactional
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
         String sessionId = se.getSession().getId();

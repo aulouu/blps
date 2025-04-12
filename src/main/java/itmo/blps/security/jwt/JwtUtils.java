@@ -16,7 +16,6 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
-
     private static final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private static final long expirationMs = 3600000; // Время действия токена: 1 час
 

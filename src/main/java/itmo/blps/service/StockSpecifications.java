@@ -6,7 +6,6 @@ import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 
 public class StockSpecifications {
-
     public static Specification<Stock> withName(String name) {
         return (root, query, cb) ->
                 name == null ? null : cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%");

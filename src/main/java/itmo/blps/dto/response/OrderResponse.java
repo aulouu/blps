@@ -1,7 +1,6 @@
 package itmo.blps.dto.response;
 
 import itmo.blps.model.Address;
-import itmo.blps.model.Product;
 import lombok.*;
 
 import java.util.List;

@@ -20,12 +20,6 @@ public class StockService {
     private final StockRepository stockRepository;
     private final ModelMapper modelMapper;
 
-    public List<StockResponse> getAllProductsOnStock() {
-        List<Stock> productsStock = stockRepository.findAll();
-        return modelMapper.map(productsStock, new TypeToken<List<StockResponse>>() {
-        }.getType());
-    }
-
     public StockResponse getProductFromStockById(Long id) {
         return stockRepository.findById(id)
                 .map(stock -> modelMapper.map(stock, StockResponse.class))

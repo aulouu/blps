@@ -8,12 +8,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -67,9 +66,8 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
             }
         });
 
-        // Создаем UserDetails на основе информации из JWT и JAAS
         return User.withUsername(username)
-                .password("") // Пароль не нужен для JWT аутентификации
+                .password("")
                 .authorities(authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()))
                 .build();
     }
@@ -83,5 +81,4 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
         return null;
     }
-
 }
