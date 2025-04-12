@@ -13,7 +13,6 @@ import jakarta.transaction.SystemException;
 import jakarta.transaction.TransactionManager;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -74,9 +72,6 @@ public class CardService {
 
             Card savedCard = cardRepository.save(card);
             bankServiceClient.createCard(cardRequest.getNumber());
-//            if (resp.getStatusCode() != HttpStatus.OK) {
-//                throw new FailTransactionException("Bank operation failed");
-//            }
 
             transactionManager.commit();
             return modelMapper.map(savedCard, CardResponse.class);

@@ -3,7 +3,6 @@ package itmo.blps.service;
 import itmo.blps.dto.request.AddressRequest;
 import itmo.blps.dto.response.AddressResponse;
 import itmo.blps.exceptions.AddressAlreadyExistsException;
-import itmo.blps.exceptions.AddressNotFoundException;
 import itmo.blps.exceptions.NotValidInputException;
 import itmo.blps.exceptions.UserNotFoundException;
 import itmo.blps.model.Address;
