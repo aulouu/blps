@@ -73,10 +73,10 @@ public class CardService {
             card.setMoney(0.0);
 
             Card savedCard = cardRepository.save(card);
-            ResponseEntity<String> resp = bankServiceClient.createCard(cardRequest.getNumber());
-            if (resp.getStatusCode() != HttpStatus.OK) {
-                throw new FailTransactionException("Bank operation failed");
-            }
+            bankServiceClient.createCard(cardRequest.getNumber());
+//            if (resp.getStatusCode() != HttpStatus.OK) {
+//                throw new FailTransactionException("Bank operation failed");
+//            }
 
             transactionManager.commit();
             return modelMapper.map(savedCard, CardResponse.class);
@@ -104,7 +104,7 @@ public class CardService {
                     .orElseThrow(() -> new CardNotFoundException(
                             String.format("Card with number %s not found or doesn't belong to user %s. Check card number", balanceRequest.getNumber(), username)
                     ));
-            ResponseEntity<String> resp = bankServiceClient.withdraw(balanceRequest.getNumber(), balanceRequest.getMoney());
+            ResponseEntity<?> resp = bankServiceClient.withdraw(balanceRequest.getNumber(), balanceRequest.getMoney());
             if (resp.getStatusCode() != HttpStatus.OK) {
                 throw new FailTransactionException("Bank operation failed");
             }

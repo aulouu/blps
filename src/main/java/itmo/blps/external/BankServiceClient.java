@@ -2,6 +2,7 @@ package itmo.blps.external;
 
 import itmo.blps.dto.request.BalanceRequest;
 import itmo.blps.dto.request.ExternalCardRequest;
+import itmo.blps.exceptions.ErrorResponse;
 import itmo.blps.exceptions.FailTransactionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +21,7 @@ public class BankServiceClient {
     @Value("${bank.service.url}")
     private String bankServiceUrl;
 
-    public ResponseEntity<String> withdraw(String cardNumber, Double amount) {
+    public ResponseEntity<?> withdraw(String cardNumber, Double amount) {
         String url = String.format("%s/withdraw", bankServiceUrl);
 
         BalanceRequest request = new BalanceRequest(cardNumber, amount);
@@ -30,7 +31,7 @@ public class BankServiceClient {
 
         HttpEntity<BalanceRequest> entity = new HttpEntity<>(request, headers);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(
+        ResponseEntity<?> response = restTemplate.postForEntity(
                 url,
                 entity,
                 String.class
@@ -42,7 +43,7 @@ public class BankServiceClient {
         return response;
     }
 
-    public ResponseEntity<String> createCard(String cardNumber) {
+    public ResponseEntity<?> createCard(String cardNumber) {
         String url = String.format("%s/create", bankServiceUrl);
 
         ExternalCardRequest request = new ExternalCardRequest(cardNumber);
@@ -52,14 +53,28 @@ public class BankServiceClient {
 
         HttpEntity<ExternalCardRequest> entity = new HttpEntity<>(request, headers);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(
+        ResponseEntity<?> response = restTemplate.postForEntity(
                 url,
                 entity,
                 String.class
         );
 
         if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new FailTransactionException(String.format("Bank operation failed: status %s", response.getStatusCode()));
+            ErrorResponse errorResponse = null;
+            if (response.getBody() instanceof ErrorResponse) {
+                errorResponse = (ErrorResponse) response.getBody();
+            }
+
+            String errorMsg = errorResponse != null
+                    ? errorResponse.getMessage()
+                    : "Unknown error occurred";
+
+            throw new FailTransactionException(
+                    String.format("Bank service returned %s: %s",
+                            response.getStatusCode(),
+                            errorMsg)
+            );
+//            throw new FailTransactionException(String.format("Bank operation failed: status %s", response.getStatusCode()));
         }
         return response;
     }
