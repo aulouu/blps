@@ -66,8 +66,12 @@ public class TransactionConfiguration {
         return em;
     }
 
-    @Bean
+    @Bean(initMethod = "init", destroyMethod = "close")
     public UserTransactionManager userTransactionManager() {
+        System.setProperty("com.atomikos.icatch.log_base_dir", "./atomikos-logs/orders-service");
+        System.setProperty("com.atomikos.icatch.log_base_name", "tmlog-orders");
+        System.setProperty("com.atomikos.icatch.tm_unique_name", "ordersTransactionManager");
+
         UserTransactionManager userTransactionManager = new UserTransactionManager();
         userTransactionManager.setForceShutdown(false);
         return userTransactionManager;
