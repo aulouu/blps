@@ -22,15 +22,10 @@ public class OrderConfirmationListener {
             logger.info("Processing order confirmation for orderId: {}", orderId);
             Order order = orderRepository.findById(orderId)
                     .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + orderId));
-
-            if (order.getCost() < 250.0) {
-                throw new NotMinimumOrderCostException("Minimum order cost is 250");
-            }
-
             order.setIsConfirmed(true);
             orderRepository.save(order);
             logger.info("Order {} successfully confirmed", orderId);
-        } catch (OrderNotFoundException | NotMinimumOrderCostException e) {
+        } catch (OrderNotFoundException e) {
             logger.error("Error processing order confirmation: {}", e.getMessage());
         } catch (Exception e) {
             logger.error("Unexpected error processing order: " + orderId, e);
