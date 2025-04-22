@@ -65,6 +65,12 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleNotMinimumOrderCostException(NotMinimumOrderCostException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleProductNotFoundException(ProductNotFoundException e) {
         return new ErrorResponse(e.getMessage());

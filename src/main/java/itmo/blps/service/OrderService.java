@@ -3,13 +3,15 @@ package itmo.blps.service;
 import itmo.blps.dto.request.AddressRequest;
 import itmo.blps.dto.request.ConfirmOrderRequest;
 import itmo.blps.dto.request.ProductRequest;
+import itmo.blps.dto.response.OrderConfirmationResponse;
 import itmo.blps.dto.response.OrderResponse;
 import itmo.blps.exceptions.*;
 import itmo.blps.model.*;
 import itmo.blps.repository.*;
-import jakarta.transaction.TransactionManager;
+import jakarta.jms.Queue;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -33,6 +35,8 @@ public class OrderService {
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
     private final AddressService addressService;
+    private final JmsTemplate jmsTemplate;
+    private final Queue orderConfirmationQueue;
 
     public static void validateDeliveryTime(String deliveryTimeInput) {
         LocalDateTime currentDateTime = LocalDateTime.now(); // Текущие дата и время
@@ -146,7 +150,7 @@ public class OrderService {
         return modelMapper.map(order, OrderResponse.class);
     }
 
-    public OrderResponse confirmOrder(String sessionId, String username, ConfirmOrderRequest confirmOrderRequest) {
+    public OrderConfirmationResponse confirmOrder(String sessionId, String username, ConfirmOrderRequest confirmOrderRequest) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(
                         String.format("Username %s not found", username)
@@ -186,11 +190,14 @@ public class OrderService {
 
         order.setDeliveryTime(confirmOrderRequest.getDeliveryTime());
         order.setUtensilsCount(confirmOrderRequest.getUtensilsCount());
+        order = orderRepository.save(order);
 
-        order.setIsConfirmed(true);
-        Order savedOrder = orderRepository.save(order);
+        jmsTemplate.convertAndSend(orderConfirmationQueue, order.getId());
 
-        return modelMapper.map(savedOrder, OrderResponse.class);
+        OrderConfirmationResponse response = modelMapper.map(order, OrderConfirmationResponse.class);
+        response.setStatus("PROCESSING");
+        response.setMessage("Your order is being processed");
+        return response;
     }
 
     public void mergeOrder(String username, String sessionId) {

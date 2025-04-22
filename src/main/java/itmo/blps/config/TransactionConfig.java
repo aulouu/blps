@@ -12,8 +12,6 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 import javax.sql.DataSource;
@@ -21,7 +19,7 @@ import java.util.Properties;
 
 @Configuration
 @RequiredArgsConstructor
-public class TransactionConfiguration {
+public class TransactionConfig {
     private final Environment environment;
 
     @Bean
