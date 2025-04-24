@@ -17,7 +17,6 @@ import java.security.Principal;
 import java.util.Map;
 import java.util.Optional;
 
-@Slf4j
 public class JaasLoginModule implements LoginModule {
     private PasswordEncoder passwordEncoder;
     private String login;

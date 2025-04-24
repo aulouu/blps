@@ -6,6 +6,7 @@ import itmo.blps.jca.Bitrix24Connection;
 import itmo.blps.jca.Bitrix24ConnectionFactory;
 import itmo.blps.model.Stock;
 import itmo.blps.repository.StockRepository;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import jakarta.resource.ResourceException;
@@ -18,7 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -27,7 +30,6 @@ import java.util.Map;
 public class StockService {
     private final StockRepository stockRepository;
     private final ModelMapper modelMapper;
-    @Autowired
     private final Bitrix24ConnectionFactory bitrix24ConnectionFactory;
 
 //    public StockResponse getProductFromStockById(Long id) {
@@ -98,33 +100,68 @@ public class StockService {
         return null;
     }
 
-    public Page<StockResponse> getFilteredStocks(
-            String name,
-            Double minPrice,
-            Double maxPrice,
-            Double minAmount,
-            Long restaurantId,
-            Pageable pageable) {
+    public List<StockResponse> getAllProductsFromBitrix24() {
+        log.info("Trying to get all products from Bitrix24");
+        try (Bitrix24Connection connection = bitrix24ConnectionFactory.getConnection()) {
+            log.info("Connection established, calling API...");
 
-        Specification<Stock> spec = Specification.where(null);
+            Map<String, Object> params = new HashMap<>();
+            JsonObject response = connection.callMethod("crm.product.list", params);
+            log.info("API response: {}", response);
 
-        if (name != null) {
-            spec = spec.and(StockSpecifications.withName(name));
-        }
-        if (minPrice != null) {
-            spec = spec.and(StockSpecifications.withMinPrice(minPrice));
-        }
-        if (maxPrice != null) {
-            spec = spec.and(StockSpecifications.withMaxPrice(maxPrice));
-        }
-        if (minAmount != null) {
-            spec = spec.and(StockSpecifications.withMinAmount(minAmount));
-        }
-        if (restaurantId != null) {
-            spec = spec.and(StockSpecifications.withRestaurant(restaurantId));
-        }
+            if (!response.containsKey("result") || response.isNull("result")) {
+                throw new RuntimeException("No products found in Bitrix24");
+            }
 
-        return stockRepository.findAll(spec, pageable)
-                .map(stock -> modelMapper.map(stock, StockResponse.class));
+            JsonArray products = response.getJsonArray("result");
+            List<StockResponse> productList = new ArrayList<>();
+
+            for (JsonObject productData : products.getValuesAs(JsonObject.class)) {
+                productList.add(StockResponse.builder()
+                        .id(safeGet(productData, "ID", Long.class))
+                        .name(productData.getString("NAME", ""))
+                        .price(safeGet(productData, "PRICE", Double.class))
+                        .build());
+            }
+
+            return productList;
+
+        } catch (ResourceException e) {
+            log.error("Bitrix24 API error", e);
+            throw new RuntimeException("Failed to connect to Bitrix24", e);
+        } catch (Exception e) {
+            log.error("Bitrix24 API error", e);
+            throw new RuntimeException("Error processing Bitrix24 response", e);
+        }
     }
+
+//    public Page<StockResponse> getFilteredStocks(
+//            String name,
+//            Double minPrice,
+//            Double maxPrice,
+//            Double minAmount,
+//            Long restaurantId,
+//            Pageable pageable) {
+//
+//        Specification<Stock> spec = Specification.where(null);
+//
+//        if (name != null) {
+//            spec = spec.and(StockSpecifications.withName(name));
+//        }
+//        if (minPrice != null) {
+//            spec = spec.and(StockSpecifications.withMinPrice(minPrice));
+//        }
+//        if (maxPrice != null) {
+//            spec = spec.and(StockSpecifications.withMaxPrice(maxPrice));
+//        }
+//        if (minAmount != null) {
+//            spec = spec.and(StockSpecifications.withMinAmount(minAmount));
+//        }
+//        if (restaurantId != null) {
+//            spec = spec.and(StockSpecifications.withRestaurant(restaurantId));
+//        }
+//
+//        return stockRepository.findAll(spec, pageable)
+//                .map(stock -> modelMapper.map(stock, StockResponse.class));
+//    }
 }

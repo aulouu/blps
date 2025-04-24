@@ -15,7 +15,6 @@ import org.glassfish.jersey.client.ClientConfig;
 import java.io.StringReader;
 import java.util.Map;
 
-@Slf4j
 public class Bitrix24ApiClient {
     private final String webhookUrl;
     private final Client client;

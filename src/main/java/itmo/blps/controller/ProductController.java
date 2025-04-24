@@ -19,30 +19,29 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/products")
-@Slf4j
 public class ProductController {
     private final StockService stockService;
 
-    @GetMapping
-    public List<StockResponse> getProducts(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice,
-            @RequestParam(required = false) Double minAmount,
-            @RequestParam(required = false) Long restaurantId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "name") String sortField,
-            @RequestParam(defaultValue = "asc") String sortDirection) {
-
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortField);
-
-        Pageable pageable = PageRequest.of(page, size, sort);
-
-        return stockService.getFilteredStocks(
-                name, minPrice, maxPrice, minAmount, restaurantId, pageable
-        ).getContent();
-    }
+//    @GetMapping
+//    public List<StockResponse> getProducts(
+//            @RequestParam(required = false) String name,
+//            @RequestParam(required = false) Double minPrice,
+//            @RequestParam(required = false) Double maxPrice,
+//            @RequestParam(required = false) Double minAmount,
+//            @RequestParam(required = false) Long restaurantId,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(defaultValue = "name") String sortField,
+//            @RequestParam(defaultValue = "asc") String sortDirection) {
+//
+//        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortField);
+//
+//        Pageable pageable = PageRequest.of(page, size, sort);
+//
+//        return stockService.getFilteredStocks(
+//                name, minPrice, maxPrice, minAmount, restaurantId, pageable
+//        ).getContent();
+//    }
 
 //    @GetMapping("/{productId}")
 //    public StockResponse getProductById(@PathVariable @Valid String productId) {
@@ -54,6 +53,17 @@ public class ProductController {
 //        }
 //        return stockService.getProductFromStockById(id);
 //    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllProducts() {
+        try {
+            List<StockResponse> products = stockService.getAllProductsFromBitrix24();
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new ErrorResponse("Error getting products: " + e.getMessage()));
+        }
+    }
 
     @GetMapping("/{productId}")
     public ResponseEntity<?> getProductById(@PathVariable @Valid String productId) {
@@ -74,7 +84,6 @@ public class ProductController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ErrorResponse(cause.getMessage()));
             }
-            log.error("Error accessing Bitrix24 API", e);
             return ResponseEntity.internalServerError()
                     .body(new ErrorResponse(errorMsg + ": " + cause.getMessage()));
         }
