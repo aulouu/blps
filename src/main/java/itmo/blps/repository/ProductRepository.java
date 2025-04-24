@@ -1,5 +1,6 @@
 package itmo.blps.repository;
 
+import itmo.blps.dto.response.StockResponse;
 import itmo.blps.model.Order;
 import itmo.blps.model.Product;
 import itmo.blps.model.Stock;
@@ -11,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    Optional<Product> findByProductOnStockAndOrder(Stock productOnStock, Order order);
+    Optional<Product> findByProductNameAndOrder(String productName, Order order);
 
     Optional<List<Product>> findByOrderId(Long productId);
 }

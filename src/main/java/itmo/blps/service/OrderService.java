@@ -5,6 +5,7 @@ import itmo.blps.dto.request.ConfirmOrderRequest;
 import itmo.blps.dto.request.ProductRequest;
 import itmo.blps.dto.response.OrderConfirmationResponse;
 import itmo.blps.dto.response.OrderResponse;
+import itmo.blps.dto.response.StockResponse;
 import itmo.blps.exceptions.*;
 import itmo.blps.model.*;
 import itmo.blps.repository.*;
@@ -37,6 +38,7 @@ public class OrderService {
     private final AddressService addressService;
     private final JmsTemplate jmsTemplate;
     private final Queue orderConfirmationQueue;
+    private final StockService stockService;
 
     public static void validateDeliveryTime(String deliveryTimeInput) {
         LocalDateTime currentDateTime = LocalDateTime.now(); // Текущие дата и время
@@ -88,13 +90,76 @@ public class OrderService {
         return modelMapper.map(order, OrderResponse.class);
     }
 
+//    public OrderResponse addProductToOrder(ProductRequest productRequest, String sessionId, String username) {
+//        Stock productOnStock = stockRepository.findById(productRequest.getProductId())
+//                .orElseThrow(() -> new ProductNotFoundException(
+//                        String.format("Product %s not found", productRequest.getProductId())
+//                ));
+//        if (productRequest.getCount() > productOnStock.getAmount()) {
+//            throw new ProductIsOutOfStockException(String.format("Amount of %s exceeds stock", productRequest.getProductId()));
+//        }
+//        if (productRequest.getCount() <= 0) {
+//            throw new NotValidInputException("Count must be positive");
+//        }
+//
+//        Optional<Order> tryOrder = getActiveOrder(sessionId, username);
+//        Order order;
+//        if (tryOrder.isEmpty()) {
+//            Optional<User> user = userRepository.findByUsername(username);
+//            if (user.isPresent()) {
+//                Optional<Order> checkConfirmed = orderRepository.
+//                        findFirstByUserIdAndIsConfirmedTrueAndIsPaidFalseOrderByCreationTimeDesc(user.get().getId());
+//                if (checkConfirmed.isPresent()) {
+//                    throw new OrderAlreadyConfirmedException("Order already confirmed, you can't add products");
+//                } else {
+//                    order = createEmptyOrder(sessionId, username);
+//                }
+//            } else {
+//                order = createEmptyOrder(sessionId, username);
+//            }
+//        } else {
+//            order = tryOrder.get();
+//        }
+//
+//        if (order.getAddress() == null) {
+//            throw new AddressNotProvidedException("Address not provided");
+//        }
+//
+//        Product productInOrder = productRepository.findByProductOnStockAndOrder(productOnStock, order)
+//                .orElseGet(Product.builder().productOnStock(productOnStock).count(0.0).order(order)::build);
+//
+//        productOnStock.setAmount(productOnStock.getAmount() - productRequest.getCount());
+//        productInOrder.setCount(productInOrder.getCount() + productRequest.getCount());
+//
+//        stockRepository.save(productOnStock);
+//        productRepository.save(productInOrder);
+//
+//        Optional<Product> exist = order.getProducts().stream()
+//                .filter(p -> Objects.equals(p.getId(), productInOrder.getId()))
+//                .findFirst();
+//
+//        if (exist.isEmpty()) {
+//            order.getProducts().add(productInOrder);
+//        }
+//
+//        double totalCost = order.getProducts().stream()
+//                .mapToDouble(p -> productOnStock.getPrice() * productInOrder.getCount())
+//                .sum();
+//        order.setCost(totalCost);
+//
+//        orderRepository.save(order);
+//
+//        return modelMapper.map(order, OrderResponse.class);
+//    }
+
     public OrderResponse addProductToOrder(ProductRequest productRequest, String sessionId, String username) {
-        Stock productOnStock = stockRepository.findById(productRequest.getProductId())
-                .orElseThrow(() -> new ProductNotFoundException(
-                        String.format("Product %s not found", productRequest.getProductId())
-                ));
-        if (productRequest.getCount() > productOnStock.getAmount()) {
-            throw new ProductIsOutOfStockException(String.format("Amount of %s exceeds stock", productRequest.getProductId()));
+        StockResponse productOnStock;
+        try {
+            productOnStock = stockService.getProductFromBitrix24ById(productRequest.getProductId());
+        } catch (ProductNotFoundException e) {
+            throw new ProductNotFoundException(
+                    String.format("Product %s not found in Bitrix24", productRequest.getProductId())
+            );
         }
         if (productRequest.getCount() <= 0) {
             throw new NotValidInputException("Count must be positive");
@@ -123,13 +188,10 @@ public class OrderService {
             throw new AddressNotProvidedException("Address not provided");
         }
 
-        Product productInOrder = productRepository.findByProductOnStockAndOrder(productOnStock, order)
-                .orElseGet(Product.builder().productOnStock(productOnStock).count(0.0).order(order)::build);
+        Product productInOrder = productRepository.findByProductNameAndOrder(productOnStock.getName(), order)
+                .orElseGet(Product.builder().productName(productOnStock.getName()).productPrice(productOnStock.getPrice()).count(0.0).order(order)::build);
 
-        productOnStock.setAmount(productOnStock.getAmount() - productRequest.getCount());
         productInOrder.setCount(productInOrder.getCount() + productRequest.getCount());
-
-        stockRepository.save(productOnStock);
         productRepository.save(productInOrder);
 
         Optional<Product> exist = order.getProducts().stream()

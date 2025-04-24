@@ -10,5 +10,6 @@ import lombok.*;
 @NoArgsConstructor
 public class ProductResponse {
     private Double count;
-    private Stock productOnStock;
+    private String productName;
+    private Double productPrice;
 }

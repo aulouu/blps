@@ -1,6 +1,7 @@
 package itmo.blps.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import itmo.blps.dto.response.StockResponse;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +27,12 @@ public class Product {
     @JsonIgnore
     private Order order;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "stock_id", nullable = false)
-    private Stock productOnStock;
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "stock_id", nullable = false)
+
+    @Column(name = "product_name", nullable = false)
+    private String productName;
+
+    @Column(name = "product_price", nullable = false)
+    private Double productPrice;
 }

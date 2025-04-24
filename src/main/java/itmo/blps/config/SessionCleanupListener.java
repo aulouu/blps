@@ -17,12 +17,9 @@ import java.util.List;
 @Component
 @WebListener
 public class SessionCleanupListener implements HttpSessionListener {
-    @Autowired
     private OrderRepository orderRepository;
-    @Autowired
     private ProductRepository productRepository;
-    @Autowired
-    private StockRepository stockRepository;
+//    private StockRepository stockRepository;
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
@@ -36,14 +33,12 @@ public class SessionCleanupListener implements HttpSessionListener {
             List<Product> productsToDelete = productRepository.findByOrderId(order.getId())
                     .orElse(null);
             if (productsToDelete == null) continue;
-            for (Product product : productsToDelete) {
-                Stock productOnStock = stockRepository.findById(product.getProductOnStock().getId())
-                        .orElse(null);
-                if (productOnStock == null) continue;
-                productOnStock.setAmount(productOnStock.getAmount() + product.getCount());
-                stockRepository.save(productOnStock);
-                productRepository.delete(product);
-            }
+            //                Stock productOnStock = stockRepository.findById(product.getProductOnStock().getId())
+            //                        .orElse(null);
+            //                if (productOnStock == null) continue;
+            //                productOnStock.setAmount(productOnStock.getAmount() + product.getCount());
+            //                stockRepository.save(productOnStock);
+            productRepository.deleteAll(productsToDelete);
         }
 
         orderRepository.deleteAll(orders);
