@@ -41,12 +41,10 @@ public class Bitrix24ManagedConnectionFactory implements ManagedConnectionFactor
             throws ResourceException {
 
         String webhookUrl = this.defaultWebhookUrl;
-//        String authToken = this.defaultAuthToken;
 
         if (cri != null && cri instanceof Bitrix24ConnectionRequestInfo) {
             Bitrix24ConnectionRequestInfo bitrixCri = (Bitrix24ConnectionRequestInfo) cri;
             webhookUrl = bitrixCri.getWebhookUrl();
-//            authToken = bitrixCri.getAuthToken();
         }
 
         return new Bitrix24ManagedConnection(this, webhookUrl);
