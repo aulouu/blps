@@ -1,6 +1,5 @@
 package itmo.blps.service;
 
-import itmo.blps.exceptions.NotMinimumOrderCostException;
 import itmo.blps.exceptions.OrderNotFoundException;
 import itmo.blps.model.Order;
 import itmo.blps.repository.OrderRepository;
@@ -13,8 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class OrderConfirmationListener {
-    private final OrderRepository orderRepository;
     private static final Logger logger = LoggerFactory.getLogger(OrderConfirmationListener.class);
+    private final OrderRepository orderRepository;
 
     @JmsListener(destination = "order.confirmation.queue")
     public void processOrderConfirmation(Long orderId) {

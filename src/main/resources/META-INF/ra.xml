@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<connector xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns="https://jakarta.ee/xml/ns/jakartaee"
+           xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                               https://jakarta.ee/xml/ns/jakartaee/connector_2_1.xsd"
+           version="2.1">
+    <display-name>Bitrix24 Resource Adapter</display-name>
+    <vendor-name>ITMO</vendor-name>
+    <eis-type>Bitrix24 API</eis-type>
+    <resourceadapter-version>1.0</resourceadapter-version>
+
+    <license>
+        <description>ITMO License</description>
+        <license-required>false</license-required>
+    </license>
+
+    <resourceadapter>
+        <resourceadapter-class>itmo.blps.jca.SBitrix24ResourceAdapter</resourceadapter-class>
+
+        <outbound-resourceadapter>
+            <connection-definition>
+                <managedconnectionfactory-class>itmo.blps.jca.Bitrix24ManagedConnectionFactory
+                </managedconnectionfactory-class>
+                <connectionfactory-interface>itmo.blps.jca.Bitrix24ConnectionFactory</connectionfactory-interface>
+                <connectionfactory-impl-class>itmo.blps.jca.Bitrix24ConnectionFactoryImpl</connectionfactory-impl-class>
+                <connection-interface>itmo.blps.jca.Bitrix24Connection</connection-interface>
+                <connection-impl-class>itmo.blps.jca.Bitrix24ConnectionImpl</connection-impl-class>
+            </connection-definition>
+            <transaction-support>NoTransaction</transaction-support>
+            <authentication-mechanism>
+                <authentication-mechanism-type>BasicPassword</authentication-mechanism-type>
+                <credential-interface>jakarta.resource.spi.security.PasswordCredential</credential-interface>
+            </authentication-mechanism>
+
+            <reauthentication-support>false</reauthentication-support>
+        </outbound-resourceadapter>
+
+        <security-permission>
+            <description>
+                The resource adapter must have permission to connect to Bitrix24 API.
+            </description>
+            <security-permission-spec>
+                permission java.net.SocketPermission "*", "connect,resolve";
+            </security-permission-spec>
+        </security-permission>
+
+        <config-property>
+            <config-property-name>defaultWebhookUrl</config-property-name>
+            <config-property-type>java.lang.String</config-property-type>
+            <config-property-value>https://b24-qeceqm.bitrix24.ru/rest/1/3mds2b23cikajyyy/</config-property-value>
+            <config-property-description>
+                Default Bitrix24 REST API endpoint URL
+            </config-property-description>
+        </config-property>
+
+        <config-property>
+            <config-property-name>defaultAuthToken</config-property-name>
+            <config-property-type>java.lang.String</config-property-type>
+            <config-property-value></config-property-value>
+            <config-property-description>
+                Default authentication token for Bitrix24 API
+            </config-property-description>
+        </config-property>
+
+        <config-property>
+            <config-property-name>maxConnections</config-property-name>
+            <config-property-type>int</config-property-type>
+            <config-property-value>10</config-property-value>
+            <config-property-description>
+                Maximum number of concurrent connections to Bitrix24 API
+            </config-property-description>
+        </config-property>
+    </resourceadapter>
+</connector> 

@@ -1,6 +1,7 @@
 package itmo.blps.exceptions;
 
 import io.swagger.v3.oas.annotations.Hidden;
+import itmo.blps.jca.Bitrix24ApiException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +14,12 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleUserAlreadyExistException(UserAlreadyExistException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleBitrix24ApiException(Bitrix24ApiException e) {
         return new ErrorResponse(e.getMessage());
     }
 

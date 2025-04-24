@@ -23,10 +23,10 @@ public class Stock {
     @Column(nullable = false)
     private Double price;
 
-    @Column(nullable = false)
-    private Double amount;
+//    @Column(nullable = false)
+//    private Double amount;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "restaurant_id", nullable = false)
-    private Restaurant restaurant;
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "restaurant_id", nullable = false)
+//    private Restaurant restaurant;
 }

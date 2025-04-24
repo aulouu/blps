@@ -1,6 +1,5 @@
 package itmo.blps.dto.response;
 
-import itmo.blps.model.Restaurant;
 import lombok.*;
 
 @Data
@@ -12,6 +11,6 @@ public class StockResponse {
     private Long id;
     private String name;
     private Double price;
-    private Double amount;
-    private Restaurant restaurant;
+//    private Double amount;
+//    private Restaurant restaurant;
 }

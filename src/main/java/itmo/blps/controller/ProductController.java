@@ -1,13 +1,17 @@
 package itmo.blps.controller;
 
 import itmo.blps.dto.response.StockResponse;
-import itmo.blps.exceptions.InvalidRequestException;
+import itmo.blps.exceptions.ErrorResponse;
+import itmo.blps.exceptions.ProductNotFoundException;
 import itmo.blps.service.StockService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/products")
+@Slf4j
 public class ProductController {
     private final StockService stockService;
 
@@ -39,14 +44,39 @@ public class ProductController {
         ).getContent();
     }
 
+//    @GetMapping("/{productId}")
+//    public StockResponse getProductById(@PathVariable @Valid String productId) {
+//        Long id;
+//        try {
+//            id = Long.parseLong(productId);
+//        } catch (NumberFormatException e) {
+//            throw new InvalidRequestException("Invalid product ID format");
+//        }
+//        return stockService.getProductFromStockById(id);
+//    }
+
     @GetMapping("/{productId}")
-    public StockResponse getProductById(@PathVariable @Valid String productId) {
-        Long id;
+    public ResponseEntity<?> getProductById(@PathVariable @Valid String productId) {
         try {
-            id = Long.parseLong(productId);
+            Long id = Long.parseLong(productId);
+            StockResponse response = stockService.getProductFromBitrix24ById(id);
+            return ResponseEntity.ok(response);
         } catch (NumberFormatException e) {
-            throw new InvalidRequestException("Invalid product ID format");
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("Invalid product ID format"));
+        } catch (Exception e) {
+            String errorMsg = "Error accessing Bitrix24 API";
+            Throwable cause = e;
+            while (cause.getCause() != null) {
+                cause = cause.getCause();
+            }
+            if (cause instanceof ProductNotFoundException) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ErrorResponse(cause.getMessage()));
+            }
+            log.error("Error accessing Bitrix24 API", e);
+            return ResponseEntity.internalServerError()
+                    .body(new ErrorResponse(errorMsg + ": " + cause.getMessage()));
         }
-        return stockService.getProductFromStockById(id);
     }
 }
