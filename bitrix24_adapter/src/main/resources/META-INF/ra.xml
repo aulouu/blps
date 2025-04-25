@@ -9,15 +9,15 @@
 <resourceadapter-version>1.0</resourceadapter-version>
 
 <resourceadapter>
-    <resourceadapter-class>itmo.blps.jca.Bitrix24ResourceAdapter</resourceadapter-class>
+    <resourceadapter-class>blps.jca.bitrix24_adapter.Bitrix24ResourceAdapter.java</resourceadapter-class>
 
     <outbound-resourceadapter>
         <connection-definition>
-            <managedconnectionfactory-class>itmo.blps.jca.Bitrix24ManagedConnectionFactory</managedconnectionfactory-class>
-            <connectionfactory-interface>itmo.blps.jca.Bitrix24ConnectionFactory</connectionfactory-interface>
-            <connectionfactory-impl-class>itmo.blps.jca.Bitrix24ConnectionFactory</connectionfactory-impl-class>
-            <connection-interface>itmo.blps.jca.Bitrix24Connection</connection-interface>
-            <connection-impl-class>itmo.blps.jca.Bitrix24Connection</connection-impl-class>
+            <managedconnectionfactory-class>blps.jca.bitrix24_adapter.Bitrix24ManagedConnectionFactory</managedconnectionfactory-class>
+            <connectionfactory-interface>blps.jca.bitrix24_adapter.Bitrix24ConnectionFactory</connectionfactory-interface>
+            <connectionfactory-impl-class>iblps.jca.bitrix24_adapter.Bitrix24ConnectionFactory</connectionfactory-impl-class>
+            <connection-interface>blps.jca.bitrix24_adapter.Bitrix24Connection</connection-interface>
+            <connection-impl-class>blps.jca.bitrix24_adapter.Bitrix24Connection</connection-impl-class>
         </connection-definition>
         <transaction-support>NoTransaction</transaction-support>
         <authentication-mechanism>
