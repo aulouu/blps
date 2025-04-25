@@ -31,9 +31,9 @@ public class AuthController {
         return authService.login(loginUserDto, httpSession.getId());
     }
 
-    @PostMapping("/invalidate-session")
-    public String invalidateSession(HttpSession session) {
-        session.invalidate();
-        return "Session invalidated";
-    }
+//    @PostMapping("/invalidate-session")
+//    public String invalidateSession(HttpSession session) {
+//        session.invalidate();
+//        return "Session invalidated";
+//    }
 }
