@@ -4,6 +4,7 @@ import itmo.blps.model.Order;
 import itmo.blps.model.Product;
 import itmo.blps.repository.OrderRepository;
 import itmo.blps.repository.ProductRepository;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Component
 @NoArgsConstructor(force = true)
+@AllArgsConstructor
 @Slf4j
 public class CleanupSessionJob extends QuartzJobBean {
     private OrderRepository orderRepository;

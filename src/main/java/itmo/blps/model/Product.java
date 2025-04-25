@@ -26,9 +26,6 @@ public class Product {
     @JsonIgnore
     private Order order;
 
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "stock_id", nullable = false)
-
     @Column(name = "product_name", nullable = false)
     private String productName;
 

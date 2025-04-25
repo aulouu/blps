@@ -11,6 +11,4 @@ public class StockResponse {
     private Long id;
     private String name;
     private Double price;
-//    private Double amount;
-//    private Restaurant restaurant;
 }

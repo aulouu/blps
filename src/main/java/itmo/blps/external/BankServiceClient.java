@@ -49,7 +49,6 @@ public class BankServiceClient {
             String errorMsg = extractErrorMessage(e.getResponseBodyAsString());
             throw new FailTransactionException(
                     String.format("Bank service returned: %s",
-//                            e.getRawStatusCode(),
                             errorMsg)
             );
         }
@@ -72,7 +71,6 @@ public class BankServiceClient {
                 String errorMsg = extractErrorMessage(response.getBody());
                 throw new FailTransactionException(
                         String.format("Bank service returned: %s",
-//                                response.getStatusCodeValue(),
                                 errorMsg)
                 );
             }
@@ -81,7 +79,6 @@ public class BankServiceClient {
             String errorMsg = extractErrorMessage(e.getResponseBodyAsString());
             throw new FailTransactionException(
                     String.format("Bank service returned: %s",
-//                            e.getRawStatusCode(),
                             errorMsg)
             );
         }

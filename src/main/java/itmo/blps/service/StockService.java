@@ -4,11 +4,12 @@ import blps.jca.bitrix24_adapter.Bitrix24Connection;
 import blps.jca.bitrix24_adapter.Bitrix24ConnectionFactory;
 import itmo.blps.dto.response.StockResponse;
 import itmo.blps.exceptions.ProductNotFoundException;
-import itmo.blps.repository.StockRepository;
+//import itmo.blps.repository.StockRepository;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import jakarta.resource.ResourceException;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -23,17 +24,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class StockService {
-    private final StockRepository stockRepository;
+//    private final StockRepository stockRepository;
     private final ModelMapper modelMapper;
     private final Bitrix24ConnectionFactory bitrix24ConnectionFactory;
-
-//    public StockResponse getProductFromStockById(Long id) {
-//        return stockRepository.findById(id)
-//                .map(stock -> modelMapper.map(stock, StockResponse.class))
-//                .orElseThrow(() -> new ProductNotFoundException(
-//                        String.format("Product with id %d not found", id)
-//                ));
-//    }
 
     public StockResponse getProductFromBitrix24ById(Long id) {
         log.info("Trying to get product {} from Bitrix24", id);
@@ -129,34 +122,4 @@ public class StockService {
             throw new RuntimeException("Error processing Bitrix24 response", e);
         }
     }
-
-//    public Page<StockResponse> getFilteredStocks(
-//            String name,
-//            Double minPrice,
-//            Double maxPrice,
-//            Double minAmount,
-//            Long restaurantId,
-//            Pageable pageable) {
-//
-//        Specification<Stock> spec = Specification.where(null);
-//
-//        if (name != null) {
-//            spec = spec.and(StockSpecifications.withName(name));
-//        }
-//        if (minPrice != null) {
-//            spec = spec.and(StockSpecifications.withMinPrice(minPrice));
-//        }
-//        if (maxPrice != null) {
-//            spec = spec.and(StockSpecifications.withMaxPrice(maxPrice));
-//        }
-//        if (minAmount != null) {
-//            spec = spec.and(StockSpecifications.withMinAmount(minAmount));
-//        }
-//        if (restaurantId != null) {
-//            spec = spec.and(StockSpecifications.withRestaurant(restaurantId));
-//        }
-//
-//        return stockRepository.findAll(spec, pageable)
-//                .map(stock -> modelMapper.map(stock, StockResponse.class));
-//    }
 }

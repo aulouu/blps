@@ -34,7 +34,6 @@ import static itmo.blps.service.AddressService.validateAddressRequest;
 public class OrderService {
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
-    private final StockRepository stockRepository;
     private final ProductRepository productRepository;
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
@@ -92,68 +91,6 @@ public class OrderService {
         }
         return modelMapper.map(order, OrderResponse.class);
     }
-
-//    public OrderResponse addProductToOrder(ProductRequest productRequest, String sessionId, String username) {
-//        Stock productOnStock = stockRepository.findById(productRequest.getProductId())
-//                .orElseThrow(() -> new ProductNotFoundException(
-//                        String.format("Product %s not found", productRequest.getProductId())
-//                ));
-//        if (productRequest.getCount() > productOnStock.getAmount()) {
-//            throw new ProductIsOutOfStockException(String.format("Amount of %s exceeds stock", productRequest.getProductId()));
-//        }
-//        if (productRequest.getCount() <= 0) {
-//            throw new NotValidInputException("Count must be positive");
-//        }
-//
-//        Optional<Order> tryOrder = getActiveOrder(sessionId, username);
-//        Order order;
-//        if (tryOrder.isEmpty()) {
-//            Optional<User> user = userRepository.findByUsername(username);
-//            if (user.isPresent()) {
-//                Optional<Order> checkConfirmed = orderRepository.
-//                        findFirstByUserIdAndIsConfirmedTrueAndIsPaidFalseOrderByCreationTimeDesc(user.get().getId());
-//                if (checkConfirmed.isPresent()) {
-//                    throw new OrderAlreadyConfirmedException("Order already confirmed, you can't add products");
-//                } else {
-//                    order = createEmptyOrder(sessionId, username);
-//                }
-//            } else {
-//                order = createEmptyOrder(sessionId, username);
-//            }
-//        } else {
-//            order = tryOrder.get();
-//        }
-//
-//        if (order.getAddress() == null) {
-//            throw new AddressNotProvidedException("Address not provided");
-//        }
-//
-//        Product productInOrder = productRepository.findByProductOnStockAndOrder(productOnStock, order)
-//                .orElseGet(Product.builder().productOnStock(productOnStock).count(0.0).order(order)::build);
-//
-//        productOnStock.setAmount(productOnStock.getAmount() - productRequest.getCount());
-//        productInOrder.setCount(productInOrder.getCount() + productRequest.getCount());
-//
-//        stockRepository.save(productOnStock);
-//        productRepository.save(productInOrder);
-//
-//        Optional<Product> exist = order.getProducts().stream()
-//                .filter(p -> Objects.equals(p.getId(), productInOrder.getId()))
-//                .findFirst();
-//
-//        if (exist.isEmpty()) {
-//            order.getProducts().add(productInOrder);
-//        }
-//
-//        double totalCost = order.getProducts().stream()
-//                .mapToDouble(p -> productOnStock.getPrice() * productInOrder.getCount())
-//                .sum();
-//        order.setCost(totalCost);
-//
-//        orderRepository.save(order);
-//
-//        return modelMapper.map(order, OrderResponse.class);
-//    }
 
     public OrderResponse addProductToOrder(ProductRequest productRequest, String sessionId, String username) {
         StockResponse productOnStock;

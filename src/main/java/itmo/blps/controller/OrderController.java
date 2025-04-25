@@ -46,7 +46,6 @@ public class OrderController {
             return ResponseEntity.internalServerError()
                     .body(new ErrorResponse(errorMsg + ": " + cause.getMessage()));
         }
-//        return orderService.addProductToOrder(productName, httpSession.getId(), username);
     }
 
     @PostMapping("/confirm")
