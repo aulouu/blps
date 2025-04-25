@@ -563,12 +563,4 @@
             <fs-exploded path="C:\Users\alina\IdeaProjects\blps\wildfly-docker\bitrix24_adapter.rar"/>
         </deployment>
     </deployments>
-<!--    <deployments>-->
-<!--        <deployment name="bitrix24_adapter.jar" runtime-name="bitrix24_adapter.jar" enabled="false">-->
-<!--            <fs-archive path="C:\Users\alina\IdeaProjects\blps\wildfly-docker\bitrix24_adapter.jar"/>-->
-<!--        </deployment>-->
-<!--        <deployment name="bitrix24_adapter.jar" runtime-name="bitrix24_adapter.jar">-->
-<!--            <fs-exploded path="C:\Users\alina\IdeaProjects\blps\wildfly-docker\bitrix24_adapter.jar"/>-->
-<!--        </deployment>-->
-<!--    </deployments>-->
 </server>

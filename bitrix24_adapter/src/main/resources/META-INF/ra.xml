@@ -20,17 +20,6 @@
             <connection-impl-class>itmo.blps.jca.Bitrix24Connection</connection-impl-class>
         </connection-definition>
         <transaction-support>NoTransaction</transaction-support>
-    </outbound-resourceadapter>
-
-    <outbound-resourceadapter>
-        <connection-definition>
-            <managedconnectionfactory-class>itmo.blps.jca.Bitrix24ManagedConnectionFactory</managedconnectionfactory-class>
-            <connectionfactory-interface>itmo.blps.jca.Bitrix24ConnectionFactory</connectionfactory-interface>
-            <connectionfactory-impl-class>itmo.blps.jca.Bitrix24ConnectionFactory</connectionfactory-impl-class>
-            <connection-interface>itmo.blps.jca.Bitrix24Connection</connection-interface>
-            <connection-impl-class>itmo.blps.jca.Bitrix24Connection</connection-impl-class>
-        </connection-definition>
-        <transaction-support>NoTransaction</transaction-support>
         <authentication-mechanism>
             <authentication-mechanism-type>BasicPassword</authentication-mechanism-type>
             <credential-interface>jakarta.resource.spi.security.PasswordCredential</credential-interface>
