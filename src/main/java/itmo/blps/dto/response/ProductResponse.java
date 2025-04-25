@@ -1,6 +1,5 @@
 package itmo.blps.dto.response;
 
-import itmo.blps.model.Stock;
 import lombok.*;
 
 @Data

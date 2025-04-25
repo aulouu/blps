@@ -1,9 +1,7 @@
 package itmo.blps.repository;
 
-import itmo.blps.dto.response.StockResponse;
 import itmo.blps.model.Order;
 import itmo.blps.model.Product;
-import itmo.blps.model.Stock;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

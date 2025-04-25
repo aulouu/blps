@@ -3,46 +3,49 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/connector_3_0.xsd"
            version="3.0">
-<display-name>Bitrix24 Resource Adapter</display-name>
-<vendor-name>ITMO</vendor-name>
-<eis-type>Bitrix24 API</eis-type>
-<resourceadapter-version>1.0</resourceadapter-version>
+    <display-name>Bitrix24 Resource Adapter</display-name>
+    <vendor-name>ITMO</vendor-name>
+    <eis-type>Bitrix24 API</eis-type>
+    <resourceadapter-version>1.0</resourceadapter-version>
 
-<resourceadapter>
-    <resourceadapter-class>blps.jca.bitrix24_adapter.Bitrix24ResourceAdapter.java</resourceadapter-class>
+    <resourceadapter>
+        <resourceadapter-class>blps.jca.bitrix24_adapter.Bitrix24ResourceAdapter.java</resourceadapter-class>
 
-    <outbound-resourceadapter>
-        <connection-definition>
-            <managedconnectionfactory-class>blps.jca.bitrix24_adapter.Bitrix24ManagedConnectionFactory</managedconnectionfactory-class>
-            <connectionfactory-interface>blps.jca.bitrix24_adapter.Bitrix24ConnectionFactory</connectionfactory-interface>
-            <connectionfactory-impl-class>iblps.jca.bitrix24_adapter.Bitrix24ConnectionFactory</connectionfactory-impl-class>
-            <connection-interface>blps.jca.bitrix24_adapter.Bitrix24Connection</connection-interface>
-            <connection-impl-class>blps.jca.bitrix24_adapter.Bitrix24Connection</connection-impl-class>
-        </connection-definition>
-        <transaction-support>NoTransaction</transaction-support>
-        <authentication-mechanism>
-            <authentication-mechanism-type>BasicPassword</authentication-mechanism-type>
-            <credential-interface>jakarta.resource.spi.security.PasswordCredential</credential-interface>
-        </authentication-mechanism>
-        <reauthentication-support>false</reauthentication-support>
-    </outbound-resourceadapter>
+        <outbound-resourceadapter>
+            <connection-definition>
+                <managedconnectionfactory-class>blps.jca.bitrix24_adapter.Bitrix24ManagedConnectionFactory
+                </managedconnectionfactory-class>
+                <connectionfactory-interface>blps.jca.bitrix24_adapter.Bitrix24ConnectionFactory
+                </connectionfactory-interface>
+                <connectionfactory-impl-class>iblps.jca.bitrix24_adapter.Bitrix24ConnectionFactory
+                </connectionfactory-impl-class>
+                <connection-interface>blps.jca.bitrix24_adapter.Bitrix24Connection</connection-interface>
+                <connection-impl-class>blps.jca.bitrix24_adapter.Bitrix24Connection</connection-impl-class>
+            </connection-definition>
+            <transaction-support>NoTransaction</transaction-support>
+            <authentication-mechanism>
+                <authentication-mechanism-type>BasicPassword</authentication-mechanism-type>
+                <credential-interface>jakarta.resource.spi.security.PasswordCredential</credential-interface>
+            </authentication-mechanism>
+            <reauthentication-support>false</reauthentication-support>
+        </outbound-resourceadapter>
 
-    <config-property>
-        <config-property-name>defaultWebhookUrl</config-property-name>
-        <config-property-type>java.lang.String</config-property-type>
-        <config-property-value>https://b24-qeceqm.bitrix24.ru/rest/1/3mds2b23cikajyyy/</config-property-value>
-        <config-property-description>
-            Default Bitrix24 REST API endpoint URL
-        </config-property-description>
-    </config-property>
+        <config-property>
+            <config-property-name>defaultWebhookUrl</config-property-name>
+            <config-property-type>java.lang.String</config-property-type>
+            <config-property-value>https://b24-qeceqm.bitrix24.ru/rest/1/3mds2b23cikajyyy/</config-property-value>
+            <config-property-description>
+                Default Bitrix24 REST API endpoint URL
+            </config-property-description>
+        </config-property>
 
-    <config-property>
-        <config-property-name>maxConnections</config-property-name>
-        <config-property-type>int</config-property-type>
-        <config-property-value>10</config-property-value>
-        <config-property-description>
-            Maximum number of concurrent connections to Bitrix24 API
-        </config-property-description>
-    </config-property>
-</resourceadapter>
+        <config-property>
+            <config-property-name>maxConnections</config-property-name>
+            <config-property-type>int</config-property-type>
+            <config-property-value>10</config-property-value>
+            <config-property-description>
+                Maximum number of concurrent connections to Bitrix24 API
+            </config-property-description>
+        </config-property>
+    </resourceadapter>
 </connector>

@@ -4,11 +4,9 @@ import itmo.blps.model.Order;
 import itmo.blps.model.Product;
 import itmo.blps.repository.OrderRepository;
 import itmo.blps.repository.ProductRepository;
-import jakarta.servlet.http.HttpSessionEvent;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
 

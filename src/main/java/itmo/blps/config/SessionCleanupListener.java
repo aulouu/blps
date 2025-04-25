@@ -2,14 +2,11 @@ package itmo.blps.config;
 
 import itmo.blps.model.Order;
 import itmo.blps.model.Product;
-import itmo.blps.model.Stock;
 import itmo.blps.repository.OrderRepository;
 import itmo.blps.repository.ProductRepository;
-import itmo.blps.repository.StockRepository;
 import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionListener;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

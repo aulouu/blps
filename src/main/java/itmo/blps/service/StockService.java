@@ -1,11 +1,10 @@
 package itmo.blps.service;
 
+import blps.jca.bitrix24_adapter.Bitrix24Connection;
+import blps.jca.bitrix24_adapter.Bitrix24ConnectionFactory;
 import itmo.blps.dto.response.StockResponse;
 import itmo.blps.exceptions.ProductNotFoundException;
-import blps.jca.bitrix24_adapter.Bitrix24ConnectionFactory;
-import blps.jca.bitrix24_adapter.Bitrix24Connection;
 import itmo.blps.repository.StockRepository;
-import jakarta.annotation.Resource;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
