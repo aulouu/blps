@@ -1,5 +1,7 @@
 package itmo.blps.security;
 
+import blps.jca.bitrix24_adapter.Bitrix24ConnectionFactory;
+import blps.jca.bitrix24_adapter.Bitrix24ManagedConnectionFactory;
 import itmo.blps.exceptions.CustomAccessDeniedHandler;
 import itmo.blps.model.Permission;
 import itmo.blps.repository.UserRepository;
@@ -117,6 +119,13 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
+    }
+
+    @Bean
+    public Bitrix24ConnectionFactory bitrix24ConnectionFactory() {
+        Bitrix24ManagedConnectionFactory mcf = new Bitrix24ManagedConnectionFactory();
+        mcf.setDefaultWebhookUrl("https://b24-qeceqm.bitrix24.ru/rest/1/3mds2b23cikajyyy/");
+        return new Bitrix24ConnectionFactory(mcf, null);
     }
 
 }

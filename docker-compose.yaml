@@ -10,5 +10,5 @@ services:
     build:
       context: ./wildfly-docker
     ports:
-      - "24680:24680"       # HTTP-порт приложения
+      - "24682:24682"       # HTTP-порт приложения
       - "9990:9990"         # Порт админ-консоли WildFly
