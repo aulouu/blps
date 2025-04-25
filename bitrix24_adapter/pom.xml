@@ -13,7 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>bitrix24_adapter</name>
     <description>bitrix24_adapter</description>
-    <packaging>rar</packaging>
+    <packaging>war</packaging>
     <url/>
     <licenses>
         <license/>
@@ -82,9 +82,8 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
-                    <include>META-INF/ra.xml</include>
+                    <include>**/*</include>
                 </includes>
-                <targetPath>META-INF</targetPath>
             </resource>
         </resources>
 
@@ -97,31 +96,18 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-rar-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>test</id>
-                        <goals>
-                            <goal>rar</goal>
-                        </goals>
-                        <configuration>
-                            <rarName>bitrix24_adapter</rarName>
-                            <archive>
-                                <manifest>
-                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                                </manifest>
-                            </archive>
-                        </configuration>
-                    </execution>
-                </executions>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
             </plugin>
         </plugins>
     </build>

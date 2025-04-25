@@ -454,15 +454,15 @@
         <subsystem xmlns="urn:jboss:domain:request-controller:1.0"/>
         <subsystem xmlns="urn:jboss:domain:resource-adapters:6.1">
             <resource-adapters>
-                Используем имя архива, которое будет в deployments
-                <resource-adapter id="bitrix24_adapter.rar">
+<!--                Используем имя архива, которое будет в deployments-->
+                <resource-adapter id="bitrix24_adapter.war">
                     <archive>
-                        bitrix24_adapter.rar <!-- Указываем фактическое имя файла в deployments -->
+                        bitrix24_adapter.war <!-- Указываем фактическое имя файла в deployments -->
                     </archive>
                     <transaction-support>NoTransaction</transaction-support>
                     <connection-definitions>
                         <connection-definition
-                                class-name="blps.jca.bitrix24_adapter.Bitrix24ManagedConnectionFactory"
+                                class-name="blps.jca.bitrix24_adapter.Bitrix24ConnectionFactory"
                                 jndi-name="java:/eis/Bitrix24ConnectionFactory"> <!-- Имя JNDI остается тем же -->
                             <config-property name="defaultWebhookUrl">
                                 https://b24-qeceqm.bitrix24.ru/rest/1/3mds2b23cikajyyy/
@@ -541,7 +541,7 @@
     </interfaces>
     <socket-binding-group name="standard-sockets" default-interface="public" port-offset="${jboss.socket.binding.port-offset:0}">
         <socket-binding name="ajp" port="${jboss.ajp.port:8009}"/>
-        <socket-binding name="http" port="${jboss.http.port:8080}"/>
+        <socket-binding name="http" port="${jboss.http.port:24680}"/>
         <socket-binding name="https" port="${jboss.https.port:8443}"/>
         <socket-binding name="management-http" interface="management" port="${jboss.management.http.port:9990}"/>
         <socket-binding name="management-https" interface="management" port="${jboss.management.https.port:9993}"/>
@@ -551,12 +551,4 @@
             <remote-destination host="${jboss.mail.server.host:localhost}" port="${jboss.mail.server.port:25}"/>
         </outbound-socket-binding>
     </socket-binding-group>
-    <deployments>
-        <deployment name="bitrix24_adapter.rar" runtime-name="bitrix24_adapter.rar" enabled="false">
-            <fs-archive path="C:\Users\alina\IdeaProjects\blps\wildfly-docker\bitrix24_adapter.rar"/>
-        </deployment>
-        <deployment name="bitrix24_adapter.rar" runtime-name="bitrix24_adapter.rar">
-            <fs-exploded path="C:\Users\alina\IdeaProjects\blps\wildfly-docker\bitrix24_adapter.rar"/>
-        </deployment>
-    </deployments>
 </server>
