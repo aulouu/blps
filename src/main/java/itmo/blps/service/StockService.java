@@ -2,10 +2,12 @@ package itmo.blps.service;
 
 import itmo.blps.dto.response.StockResponse;
 import itmo.blps.exceptions.ProductNotFoundException;
-import itmo.blps.jca.Bitrix24Connection;
-import itmo.blps.jca.Bitrix24ConnectionFactory;
+import blps.jca.bitrix24_adapter.Bitrix24ManagedConnectionFactory;
+import blps.jca.bitrix24_adapter.Bitrix24ConnectionFactory;
+import blps.jca.bitrix24_adapter.Bitrix24Connection;
 import itmo.blps.model.Stock;
 import itmo.blps.repository.StockRepository;
+import jakarta.annotation.Resource;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
@@ -30,6 +32,7 @@ import java.util.Map;
 public class StockService {
     private final StockRepository stockRepository;
     private final ModelMapper modelMapper;
+    @Resource(lookup = "java:/eis/Bitrix24ConnectionFactory")
     private final Bitrix24ConnectionFactory bitrix24ConnectionFactory;
 
 //    public StockResponse getProductFromStockById(Long id) {

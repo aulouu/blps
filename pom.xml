@@ -174,6 +174,18 @@
 			<version>3.1.10</version>
 		</dependency>
 
+		<dependency>
+			<groupId>blps.jca</groupId>
+			<artifactId>bitrix24_adapter</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>rar</type>
+		</dependency>
+		<dependency>
+			<groupId>blps.jca</groupId>
+			<artifactId>bitrix24_adapter</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 
 	</dependencies>
 

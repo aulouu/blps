@@ -4,3 +4,11 @@ services:
     ports:
       - "61616:61616"
       - "8161:8161"
+
+
+  jca-service:
+    build:
+      context: ./wildfly-docker
+    ports:
+      - "24680:24680"       # HTTP-порт приложения
+      - "9990:9990"         # Порт админ-консоли WildFly
