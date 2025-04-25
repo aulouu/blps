@@ -13,7 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>bitrix24_adapter</name>
     <description>bitrix24_adapter</description>
-    <packaging>jar</packaging>
+    <packaging>rar</packaging>
     <url/>
     <licenses>
         <license/>
@@ -100,6 +100,28 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-rar-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>test</id>
+                        <goals>
+                            <goal>rar</goal>
+                        </goals>
+                        <configuration>
+                            <rarName>bitrix24_adapter</rarName>
+                            <archive>
+                                <manifest>
+                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                </manifest>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

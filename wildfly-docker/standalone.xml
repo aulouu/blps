@@ -454,9 +454,7 @@
         <subsystem xmlns="urn:jboss:domain:request-controller:1.0"/>
         <subsystem xmlns="urn:jboss:domain:resource-adapters:6.1">
             <resource-adapters>
-
-
-                 Используем имя архива, которое будет в deployments
+                Используем имя архива, которое будет в deployments
                 <resource-adapter id="bitrix24_adapter.rar">
                     <archive>
                         bitrix24_adapter.rar <!-- Указываем фактическое имя файла в deployments -->
@@ -464,7 +462,7 @@
                     <transaction-support>NoTransaction</transaction-support>
                     <connection-definitions>
                         <connection-definition
-                                class-name="itmo.blps.jca.Bitrix24ManagedConnectionFactory"
+                                class-name="blps.jca.bitrix24_adapter.Bitrix24ManagedConnectionFactory"
                                 jndi-name="java:/eis/Bitrix24ConnectionFactory"> <!-- Имя JNDI остается тем же -->
                             <config-property name="defaultWebhookUrl">
                                 https://b24-qeceqm.bitrix24.ru/rest/1/3mds2b23cikajyyy/
@@ -479,8 +477,6 @@
                         </connection-definition>
                     </connection-definitions>
                 </resource-adapter>
-
-
             </resource-adapters>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:sar:1.0"/>
