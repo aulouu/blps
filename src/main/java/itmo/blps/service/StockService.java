@@ -4,15 +4,12 @@ import blps.jca.bitrix24_adapter.Bitrix24Connection;
 import blps.jca.bitrix24_adapter.Bitrix24ConnectionFactory;
 import itmo.blps.dto.response.StockResponse;
 import itmo.blps.exceptions.ProductNotFoundException;
-//import itmo.blps.repository.StockRepository;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import jakarta.resource.ResourceException;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,8 +21,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class StockService {
-//    private final StockRepository stockRepository;
-    private final ModelMapper modelMapper;
     private final Bitrix24ConnectionFactory bitrix24ConnectionFactory;
 
     public StockResponse getProductFromBitrix24ById(Long id) {

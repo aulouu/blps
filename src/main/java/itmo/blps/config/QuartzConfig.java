@@ -15,10 +15,9 @@ import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 @Slf4j
 public class QuartzConfig {
 
+    private final ApplicationContext applicationContext;
     @Value("${job.session-cleanup}")
     private int intervalInMinutes;
-
-    private final ApplicationContext applicationContext;
 
     public QuartzConfig(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -82,4 +81,3 @@ public class QuartzConfig {
         }
     }
 }
-
