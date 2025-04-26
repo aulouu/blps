@@ -13,6 +13,7 @@ import jakarta.jms.Queue;
 import jakarta.transaction.SystemException;
 import jakarta.transaction.TransactionManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CardService {
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
@@ -77,7 +79,6 @@ public class CardService {
             card.setMoney(0.0);
 
             Card savedCard = cardRepository.save(card);
-//            bankServiceClient.createCard(cardRequest.getNumber());
 
             String correlationId = UUID.randomUUID().toString();
             jmsTemplate.convertAndSend(cardCreateQueue, card.getNumber(), message -> {
@@ -99,6 +100,15 @@ public class CardService {
 
             transactionManager.commit();
             return modelMapper.map(savedCard, CardResponse.class);
+        } catch (CardAlreadyExistsException e) {
+            log.error("Card already exists: {}", e.getMessage());
+            try {
+                transactionManager.rollback();
+            } catch (SystemException ex) {
+                log.error("Failed to rollback transaction: {}", ex.getMessage());
+                throw new FailTransactionException(String.format("Failed to rollback transaction: %s", ex.getMessage()));
+            }
+            throw e;
         } catch (Exception e) {
             try {
                 transactionManager.rollback();
