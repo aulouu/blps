@@ -11,6 +11,7 @@ import itmo.blps.security.jwt.JwtAuthEntryPoint;
 import itmo.blps.security.jwt.JwtAuthTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,6 +41,8 @@ import java.util.Map;
 public class SecurityConfig {
     private final JwtAuthTokenFilter jwtAuthTokenFilter;
     private final UserRepository userRepository;
+    @Value("${jca.defaultWebhookUrl}")
+    private String defaultWebhookUrl;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, CustomAccessDeniedHandler customAccessDeniedHandler) throws Exception {
@@ -124,7 +127,7 @@ public class SecurityConfig {
     @Bean
     public Bitrix24ConnectionFactory bitrix24ConnectionFactory() {
         Bitrix24ManagedConnectionFactory mcf = new Bitrix24ManagedConnectionFactory();
-        mcf.setDefaultWebhookUrl("https://b24-qeceqm.bitrix24.ru/rest/1/3mds2b23cikajyyy/");
+        mcf.setDefaultWebhookUrl(defaultWebhookUrl);
         return new Bitrix24ConnectionFactory(mcf, null);
     }
 

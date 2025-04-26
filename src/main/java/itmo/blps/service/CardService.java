@@ -9,18 +9,21 @@ import itmo.blps.model.Card;
 import itmo.blps.model.User;
 import itmo.blps.repository.CardRepository;
 import itmo.blps.repository.UserRepository;
+import jakarta.jms.Queue;
 import jakarta.transaction.SystemException;
 import jakarta.transaction.TransactionManager;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +33,9 @@ public class CardService {
     private final ModelMapper modelMapper;
     private final BankServiceClient bankServiceClient;
     private final TransactionManager transactionManager;
+    private final JmsTemplate jmsTemplate;
+    private final Queue cardCreateQueue;
+    private final Queue cardSubmitQueue;
 
     public static void validateCardRequest(CardRequest cardRequest) throws IllegalArgumentException {
         if (cardRequest.getNumber() == null || cardRequest.getNumber().length() != 16 || !cardRequest.getNumber().matches("^[0-9]+$")) {
@@ -71,7 +77,25 @@ public class CardService {
             card.setMoney(0.0);
 
             Card savedCard = cardRepository.save(card);
-            bankServiceClient.createCard(cardRequest.getNumber());
+//            bankServiceClient.createCard(cardRequest.getNumber());
+
+            String correlationId = UUID.randomUUID().toString();
+            jmsTemplate.convertAndSend(cardCreateQueue, card.getNumber(), message -> {
+                message.setJMSCorrelationID(correlationId);
+                return message;
+            });
+
+            Boolean confirmation = (Boolean) jmsTemplate.receiveSelectedAndConvert(
+                    cardSubmitQueue,
+                    "JMSCorrelationID = '" + correlationId + "'"
+            );
+
+            if (confirmation == null) {
+                throw new FailTransactionException("Bank response timeout");
+            }
+            if (!confirmation) {
+                throw new FailTransactionException("Bank rejected card creation");
+            }
 
             transactionManager.commit();
             return modelMapper.map(savedCard, CardResponse.class);
