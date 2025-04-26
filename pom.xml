@@ -130,6 +130,14 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-binding</artifactId>
             <version>3.1.1</version>
@@ -178,7 +186,7 @@
             <groupId>blps.jca</groupId>
             <artifactId>bitrix24_adapter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-            <type>rar</type>
+            <type>war</type>
         </dependency>
         <dependency>
             <groupId>blps.jca</groupId>

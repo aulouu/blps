@@ -11,4 +11,9 @@ public class QueueConfig {
     public Queue orderConfirmationQueue() {
         return new ActiveMQQueue("order.confirmation.queue");
     }
+
+    @Bean
+    public Queue orderPaymentQueue() {
+        return new ActiveMQQueue("order.payment.queue");
+    }
 }
