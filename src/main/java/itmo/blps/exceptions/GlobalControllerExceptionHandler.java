@@ -169,4 +169,10 @@ public class GlobalControllerExceptionHandler {
     public ErrorResponse handleFailTransactionException(FailTransactionException e) {
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    public ErrorResponse handleBankUnavailableException(BankUnavailableException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }
