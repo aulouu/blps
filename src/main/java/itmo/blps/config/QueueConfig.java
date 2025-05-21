@@ -8,11 +8,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class QueueConfig {
     @Bean
-    public Queue orderConfirmationQueue() {
-        return new ActiveMQQueue("order.confirmation.queue");
-    }
-
-    @Bean
     public Queue cardCreateQueue() {
         return new ActiveMQQueue("card.create.queue");
     }

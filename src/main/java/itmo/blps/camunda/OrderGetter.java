@@ -1,10 +1,8 @@
 package itmo.blps.camunda;
 
-import itmo.blps.dto.request.AddressRequest;
 import itmo.blps.dto.response.OrderResponse;
 import itmo.blps.model.User;
 import itmo.blps.repository.UserRepository;
-import itmo.blps.security.jwt.JwtUtils;
 import itmo.blps.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
@@ -45,7 +43,6 @@ public class OrderGetter implements JavaDelegate {
             if (!hasRequiredRole) {
                 throw new BpmnError("NO_REQUIRED_ROLE", "User does not have required role to create order.");
             }
-
 
             OrderResponse order = orderService.getCurrentOrder("", username);
 

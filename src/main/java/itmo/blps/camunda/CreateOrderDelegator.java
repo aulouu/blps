@@ -18,8 +18,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class CreateOrderDelegator implements JavaDelegate {
-
-
     private final OrderService orderService;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
@@ -68,12 +66,12 @@ public class CreateOrderDelegator implements JavaDelegate {
             }
 
             OrderResponse order = orderService.setAddress(AddressRequest.builder()
-                            .building(building)
-                            .city(city)
-                            .entrance(entrance)
-                            .flat(flat)
-                            .floor(floor)
-                            .street(street)
+                    .building(building)
+                    .city(city)
+                    .entrance(entrance)
+                    .flat(flat)
+                    .floor(floor)
+                    .street(street)
                     .build(), "", username);
 
             execution.setVariable("order_id", order.getId());

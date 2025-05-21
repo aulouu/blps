@@ -1,11 +1,9 @@
 package itmo.blps.camunda;
 
-import itmo.blps.dto.request.AddressRequest;
 import itmo.blps.dto.request.ProductRequest;
 import itmo.blps.dto.response.OrderResponse;
 import itmo.blps.model.User;
 import itmo.blps.repository.UserRepository;
-import itmo.blps.security.jwt.JwtUtils;
 import itmo.blps.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
@@ -47,7 +45,6 @@ public class AddProductDelegator implements JavaDelegate {
                 throw new BpmnError("NO_REQUIRED_ROLE", "User does not have required role to create order.");
             }
 
-
             Long productId = (Long) execution.getVariable("product_id");
             Double productCount = (Double) execution.getVariable("product_count");
 
@@ -56,8 +53,8 @@ public class AddProductDelegator implements JavaDelegate {
             }
 
             OrderResponse order = orderService.addProductToOrder(ProductRequest.builder()
-                            .productId(productId)
-                            .count(productCount)
+                    .productId(productId)
+                    .count(productCount)
                     .build(), "", username);
 
             execution.setVariable("order_id", order.getId());

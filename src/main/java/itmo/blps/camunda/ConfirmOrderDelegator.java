@@ -1,9 +1,7 @@
 package itmo.blps.camunda;
 
 import itmo.blps.dto.request.ConfirmOrderRequest;
-import itmo.blps.dto.request.ProductRequest;
 import itmo.blps.dto.response.OrderConfirmationResponse;
-import itmo.blps.dto.response.OrderResponse;
 import itmo.blps.model.User;
 import itmo.blps.repository.UserRepository;
 import itmo.blps.service.OrderService;
@@ -46,7 +44,6 @@ public class ConfirmOrderDelegator implements JavaDelegate {
                 throw new BpmnError("NO_REQUIRED_ROLE", "User does not have required role to create order.");
             }
 
-
             String deliveryTime = (String) execution.getVariable("delivery_time");
             Integer utensilsCount = (Integer) execution.getVariable("utensils_count");
 
@@ -55,8 +52,8 @@ public class ConfirmOrderDelegator implements JavaDelegate {
             }
 
             OrderConfirmationResponse order = orderService.confirmOrder("", username, ConfirmOrderRequest.builder()
-                            .deliveryTime(deliveryTime)
-                            .utensilsCount(utensilsCount)
+                    .deliveryTime(deliveryTime)
+                    .utensilsCount(utensilsCount)
                     .build());
 
             execution.setVariable("order_id", order.getId());

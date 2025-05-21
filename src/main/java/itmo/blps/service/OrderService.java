@@ -41,8 +41,6 @@ public class OrderService {
     private final AddressRepository addressRepository;
     private final ModelMapper modelMapper;
     private final AddressService addressService;
-    private final JmsTemplate jmsTemplate;
-    private final Queue orderConfirmationQueue;
     private final StockService stockService;
 
     public static void validateDeliveryTime(String deliveryTimeInput) {
@@ -195,9 +193,8 @@ public class OrderService {
 
         order.setDeliveryTime(confirmOrderRequest.getDeliveryTime());
         order.setUtensilsCount(confirmOrderRequest.getUtensilsCount());
+        order.setIsConfirmed(true);
         order = orderRepository.save(order);
-
-        jmsTemplate.convertAndSend(orderConfirmationQueue, order.getId());
 
         OrderConfirmationResponse response = modelMapper.map(order, OrderConfirmationResponse.class);
         response.setStatus("PROCESSING");

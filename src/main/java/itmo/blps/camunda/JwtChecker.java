@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class JwtChecker implements JavaDelegate {
-
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
 
@@ -51,6 +50,4 @@ public class JwtChecker implements JavaDelegate {
         delegateExecution.setVariable("hasRoleAdmin", hasRoleAdmin);
         System.out.println(hasRoleUnauthorized);
     }
-
 }
-
