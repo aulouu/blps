@@ -197,8 +197,6 @@ public class OrderService {
         order = orderRepository.save(order);
 
         OrderConfirmationResponse response = modelMapper.map(order, OrderConfirmationResponse.class);
-        response.setStatus("PROCESSING");
-        response.setMessage("Your order is being processed");
         return response;
     }
 

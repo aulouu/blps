@@ -1,11 +1,11 @@
 package itmo.blps.camunda;
 
-import itmo.blps.dto.request.AddressRequest;
-import itmo.blps.dto.response.OrderResponse;
+import itmo.blps.dto.request.CardRequest;
+import itmo.blps.dto.response.CardResponse;
 import itmo.blps.model.User;
 import itmo.blps.repository.UserRepository;
 import itmo.blps.security.jwt.JwtUtils;
-import itmo.blps.service.OrderService;
+import itmo.blps.service.CardService;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CreateOrderDelegator implements JavaDelegate {
-    private final OrderService orderService;
+public class CreateCardDelegator implements JavaDelegate {
+    private final CardService cardService;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
 
@@ -47,34 +47,30 @@ public class CreateOrderDelegator implements JavaDelegate {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             boolean hasRequiredRole = user.getAuthorities().stream()
-                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("VIEW_CURRENT_ORDER"));
+                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("CREATE_CARD"));
 
             if (!hasRequiredRole) {
-                throw new BpmnError("NO_REQUIRED_ROLE", "User does not have required role to create order.");
+                throw new BpmnError("NO_REQUIRED_ROLE", "User does not have required role to create card.");
             }
 
-            String city = (String) execution.getVariable("city");
-            String street = (String) execution.getVariable("street");
-            Integer building = (Integer) execution.getVariable("building");
-            Integer entrance = (Integer) execution.getVariable("entrance");
-            Integer flat = (Integer) execution.getVariable("flat");
-            Integer floor = (Integer) execution.getVariable("floor");
+            String number = (String) execution.getVariable("number");
+            String expiration = (String) execution.getVariable("expiration");
+            String cvv = (String) execution.getVariable("cvv");
 
-            if (city == null || street == null || building == null || entrance == null || flat == null || floor == null) {
-                throw new BpmnError("MISSING_ADDRESS_INFO", "Some address fields missing");
+            if (number == null || expiration == null || cvv == null) {
+                throw new BpmnError("MISSING_CARD_INFO", "Some card fields missing");
             }
 
-            OrderResponse order = orderService.setAddress(AddressRequest.builder()
-                    .building(building)
-                    .city(city)
-                    .entrance(entrance)
-                    .flat(flat)
-                    .floor(floor)
-                    .street(street)
-                    .build(), "", username);
+            CardResponse savedCard = cardService.createCard(CardRequest.builder()
+                    .number(number)
+                    .expiration(expiration)
+                    .cvv(cvv)
+                    .build(), username);
 
-            execution.setVariable("order_id", order.getId());
-            execution.setVariable("order_cost", order.getCost());
+            execution.setVariable("card_id", savedCard.getId());
+            execution.setVariable("card_number", savedCard.getNumber());
+            execution.setVariable("card_expiration", savedCard.getExpiration());
+            execution.setVariable("card_money", savedCard.getMoney());
 
         } finally {
             SecurityContextHolder.clearContext();

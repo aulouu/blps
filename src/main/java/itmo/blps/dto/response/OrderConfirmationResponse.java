@@ -18,6 +18,4 @@ public class OrderConfirmationResponse {
     private List<ProductResponse> products;
     private String deliveryTime;
     private Integer utensilsCount;
-    private String status;
-    private String message;
 }

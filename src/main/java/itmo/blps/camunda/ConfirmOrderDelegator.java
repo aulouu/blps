@@ -38,17 +38,17 @@ public class ConfirmOrderDelegator implements JavaDelegate {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             boolean hasRequiredRole = user.getAuthorities().stream()
-                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADD_PRODUCT"));
+                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("CONFIRM_ORDER"));
 
             if (!hasRequiredRole) {
-                throw new BpmnError("NO_REQUIRED_ROLE", "User does not have required role to create order.");
+                throw new BpmnError("NO_REQUIRED_ROLE", "User does not have required role to confirm order.");
             }
 
             String deliveryTime = (String) execution.getVariable("delivery_time");
             Integer utensilsCount = (Integer) execution.getVariable("utensils_count");
 
             if (deliveryTime == null || utensilsCount == null) {
-                throw new BpmnError("MISSING_PRODUCT_INFO", "Some product fields missing");
+                throw new BpmnError("MISSING_DELIVERY_INFO", "Some delivery fields missing");
             }
 
             OrderConfirmationResponse order = orderService.confirmOrder("", username, ConfirmOrderRequest.builder()
@@ -58,7 +58,6 @@ public class ConfirmOrderDelegator implements JavaDelegate {
 
             execution.setVariable("order_id", order.getId());
             execution.setVariable("order_cost", order.getCost());
-            execution.setVariable("order_status", order.getStatus());
 
         } finally {
             SecurityContextHolder.clearContext();

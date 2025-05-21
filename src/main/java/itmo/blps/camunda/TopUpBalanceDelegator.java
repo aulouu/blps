@@ -1,10 +1,10 @@
 package itmo.blps.camunda;
 
-import itmo.blps.dto.request.ProductRequest;
-import itmo.blps.dto.response.OrderResponse;
+import itmo.blps.dto.request.BalanceRequest;
+import itmo.blps.dto.response.CardResponse;
 import itmo.blps.model.User;
 import itmo.blps.repository.UserRepository;
-import itmo.blps.service.OrderService;
+import itmo.blps.service.CardService;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AddProductDelegator implements JavaDelegate {
-    private final OrderService orderService;
+public class TopUpBalanceDelegator implements JavaDelegate {
+    private final CardService cardService;
     private final UserRepository userRepository;
 
     @Override
@@ -38,26 +38,28 @@ public class AddProductDelegator implements JavaDelegate {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             boolean hasRequiredRole = user.getAuthorities().stream()
-                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADD_PRODUCT"));
+                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("TOP_UP_BALANCE"));
 
             if (!hasRequiredRole) {
-                throw new BpmnError("NO_REQUIRED_ROLE", "User does not have required role to create order.");
+                throw new BpmnError("NO_REQUIRED_ROLE", "User does not have required role to top up balance.");
             }
 
-            Long productId = (Long) execution.getVariable("product_id");
-            Double productCount = (Double) execution.getVariable("product_count");
+            String number = (String) execution.getVariable("number");
+            Double money = (Double) execution.getVariable("money");
 
-            if (productId == null || productCount == null) {
-                throw new BpmnError("MISSING_PRODUCT_INFO", "Some product fields missing");
+            if (number == null || money == null) {
+                throw new BpmnError("MISSING_TOP_UP_BALANCE_INFO", "Some 'top up balance' fields missing");
             }
 
-            OrderResponse order = orderService.addProductToOrder(ProductRequest.builder()
-                    .productId(productId)
-                    .count(productCount)
-                    .build(), "", username);
+            CardResponse updatedCard = cardService.topUpBalance(BalanceRequest.builder()
+                    .number(number)
+                    .money(money)
+                    .build(), username);
 
-            execution.setVariable("order_id", order.getId());
-            execution.setVariable("order_cost", order.getCost());
+            execution.setVariable("card_id", updatedCard.getId());
+            execution.setVariable("card_number", updatedCard.getNumber());
+            execution.setVariable("card_expiration", updatedCard.getExpiration());
+            execution.setVariable("card_money", updatedCard.getMoney());
 
         } finally {
             SecurityContextHolder.clearContext();
