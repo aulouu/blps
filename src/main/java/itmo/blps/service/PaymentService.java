@@ -104,4 +104,56 @@ public class PaymentService {
                 .order(modelMapper.map(order, OrderResponse.class))
                 .build();
     }
+
+    public CardResponse createOrGetCard(String username, CardRequest cardRequest) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(
+                        String.format("Username %s not found", username)
+                ));
+        Order order = orderRepository.findFirstByUserIdAndIsConfirmedTrueAndIsPaidFalseOrderByCreationTimeDesc(user.getId())
+                .orElseThrow(() -> new OrderNotFoundException(
+                        String.format("Order not found for payment, user %s", username)
+                ));
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new OrderNotBelongException("Order does not belong to the user");
+        }
+        if (!order.getIsConfirmed()) {
+            throw new NotValidOrderStatusException("Order is not confirmed");
+        }
+        if (order.getIsPaid()) {
+            throw new NotValidOrderStatusException("Order is already paid");
+        }
+
+        validateCardRequest(cardRequest);
+
+        String hashedCvv = new BCryptPasswordEncoder().encode(cardRequest.getCvv());
+        YearMonth expirationDate = YearMonth.parse(cardRequest.getExpiration(),
+                DateTimeFormatter.ofPattern("MM/yy"));
+        if (expirationDate.isBefore(YearMonth.now())) {
+            throw new NotValidInputException("Card has expired");
+        }
+        Card card;
+        Optional<Card> cardOptional = cardRepository.findFirstByUserOrderByIdDesc(user);
+
+        if (cardOptional.isEmpty()) {
+            CardResponse cardResponse = cardService.createCard(cardRequest, username);
+            card = modelMapper.map(cardResponse, Card.class);
+            card.setUser(user);
+            card.setCvv(hashedCvv);
+            card.setMoney(0.0);
+            card = cardRepository.save(card);
+        } else {
+            card = cardOptional.get();
+            if (!cardRequest.getNumber().equals(card.getNumber())) {
+                throw new NotValidInputException("Card number date does not match");
+            }
+            if (!cardRequest.getExpiration().equals(card.getExpiration())) {
+                throw new NotValidInputException("Card expiration date does not match");
+            }
+            if (!new BCryptPasswordEncoder().matches(cardRequest.getCvv(), card.getCvv())) {
+                throw new NotValidInputException("Invalid CVV");
+            }
+        }
+        return modelMapper.map(card, CardResponse.class);
+    }
 }

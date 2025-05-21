@@ -25,9 +25,7 @@ public class TopUpBalanceDelegator implements JavaDelegate {
             String username = (String) execution.getVariable("username");
 
             User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> {
-                        return new BpmnError("USER_NOT_FOUND", "User details not found for token.");
-                    });
+                    .orElseThrow(() -> new BpmnError("USER_NOT_FOUND", "User details not found for token."));
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     user,
@@ -44,8 +42,8 @@ public class TopUpBalanceDelegator implements JavaDelegate {
                 throw new BpmnError("NO_REQUIRED_ROLE", "User does not have required role to top up balance.");
             }
 
-            String number = (String) execution.getVariable("number");
-            Double money = (Double) execution.getVariable("money");
+            String number = (String) execution.getVariable("card_number");
+            Double money = (Double) execution.getVariable("card_money");
 
             if (number == null || money == null) {
                 throw new BpmnError("MISSING_TOP_UP_BALANCE_INFO", "Some 'top up balance' fields missing");

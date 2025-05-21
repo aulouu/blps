@@ -25,9 +25,7 @@ public class AddProductDelegator implements JavaDelegate {
             String username = (String) execution.getVariable("username");
 
             User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> {
-                        return new BpmnError("USER_NOT_FOUND", "User details not found for token.");
-                    });
+                    .orElseThrow(() -> new BpmnError("USER_NOT_FOUND", "User details not found for token."));
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     user,

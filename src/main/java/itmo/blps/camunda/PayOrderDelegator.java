@@ -4,7 +4,6 @@ import itmo.blps.dto.request.CardRequest;
 import itmo.blps.dto.response.PaymentResponse;
 import itmo.blps.model.User;
 import itmo.blps.repository.UserRepository;
-import itmo.blps.security.jwt.JwtUtils;
 import itmo.blps.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
@@ -18,25 +17,15 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PayOrderDelegator implements JavaDelegate {
     private final PaymentService paymentService;
-    private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
 
     @Override
     public void execute(DelegateExecution execution) throws Exception {
-        String token = (String) execution.getVariable("token");
-
         try {
-            if (token == null || !jwtUtils.validateJwtToken(token)) {
-                throw new BpmnError("INVALID_TOKEN", "Authentication token is invalid or missing.");
-            }
-
-            String username = jwtUtils.getUserNameFromJwtToken(token);
+            String username = (String) execution.getVariable("username");
 
             User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> {
-//                        log.error("User not found for username {} from token", username);
-                        return new BpmnError("USER_NOT_FOUND", "User details not found for token.");
-                    });
+                    .orElseThrow(() -> new BpmnError("USER_NOT_FOUND", "User details not found for token."));
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     user,
@@ -53,9 +42,9 @@ public class PayOrderDelegator implements JavaDelegate {
                 throw new BpmnError("NO_REQUIRED_ROLE", "User does not have required role to create card.");
             }
 
-            String number = (String) execution.getVariable("number");
-            String expiration = (String) execution.getVariable("expiration");
-            String cvv = (String) execution.getVariable("cvv");
+            String number = (String) execution.getVariable("card_number");
+            String expiration = (String) execution.getVariable("card_expiration");
+            String cvv = (String) execution.getVariable("card_cvv");
 
             if (number == null || expiration == null || cvv == null) {
                 throw new BpmnError("MISSING_PAYMENT_INFO", "Some fields for payment missing");

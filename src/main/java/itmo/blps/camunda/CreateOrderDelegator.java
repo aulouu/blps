@@ -4,7 +4,6 @@ import itmo.blps.dto.request.AddressRequest;
 import itmo.blps.dto.response.OrderResponse;
 import itmo.blps.model.User;
 import itmo.blps.repository.UserRepository;
-import itmo.blps.security.jwt.JwtUtils;
 import itmo.blps.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
@@ -18,25 +17,15 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CreateOrderDelegator implements JavaDelegate {
     private final OrderService orderService;
-    private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
 
     @Override
     public void execute(DelegateExecution execution) throws Exception {
-        String token = (String) execution.getVariable("token");
-
         try {
-            if (token == null || !jwtUtils.validateJwtToken(token)) {
-                throw new BpmnError("INVALID_TOKEN", "Authentication token is invalid or missing.");
-            }
-
-            String username = jwtUtils.getUserNameFromJwtToken(token);
+            String username = (String) execution.getVariable("username");
 
             User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> {
-//                        log.error("User not found for username {} from token", username);
-                        return new BpmnError("USER_NOT_FOUND", "User details not found for token.");
-                    });
+                    .orElseThrow(() -> new BpmnError("USER_NOT_FOUND", "User details not found for token."));
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     user,
