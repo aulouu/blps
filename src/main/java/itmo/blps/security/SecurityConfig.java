@@ -77,6 +77,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/create-request").hasAuthority(Permission.CREATE_ADMIN_REQUEST.name())
                         .requestMatchers("/api/admin/approve/{adminRequestId}").hasAuthority(Permission.APPROVE_ADMIN_REQUEST.name())
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/camunda-welcome/**", "/camunda/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception
