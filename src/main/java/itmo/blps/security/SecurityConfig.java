@@ -10,10 +10,14 @@ import itmo.blps.security.jaas.JaasLoginModule;
 import itmo.blps.security.jwt.JwtAuthEntryPoint;
 import itmo.blps.security.jwt.JwtAuthTokenFilter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.camunda.bpm.engine.ProcessEngine;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.jaas.AuthorityGranter;
@@ -130,5 +134,4 @@ public class SecurityConfig {
         mcf.setDefaultWebhookUrl(defaultWebhookUrl);
         return new Bitrix24ConnectionFactory(mcf, null);
     }
-
 }
