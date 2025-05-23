@@ -29,4 +29,9 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
 
         response.getWriter().write(new ObjectMapper().writeValueAsString(errorDetails));
     }
+
+//    @Override
+//    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
+//        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//    }
 }

@@ -3,14 +3,6 @@ package itmo.blps.model;
 import java.util.Set;
 
 public enum Role {
-    UNAUTHORIZED_USER(Set.of(Permission.REGISTER,
-            Permission.LOGIN,
-            Permission.SET_ADDRESS,
-            Permission.ADD_PRODUCT,
-            Permission.VIEW_CURRENT_ORDER,
-            Permission.CREATE_ADDRESS,
-            Permission.VIEW_PRODUCT,
-            Permission.VIEW_ALL_PRODUCTS)),
     USER(Set.of(Permission.VIEW_ALL_PRODUCTS,
             Permission.VIEW_PRODUCT,
             Permission.VIEW_CURRENT_ORDER,

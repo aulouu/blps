@@ -35,19 +35,14 @@ public class JwtChecker implements JavaDelegate {
                 });
         delegateExecution.setVariable("username", user.getUsername());
 
-        boolean hasRoleUnauthorized = false;
         boolean hasRoleUser = false;
         boolean hasRoleAdmin = false;
-        if (user.getRole() == Role.UNAUTHORIZED_USER)
-            hasRoleUnauthorized = true;
         if (user.getRole() == Role.USER)
             hasRoleUser = true;
         if (user.getRole() == Role.ADMIN)
             hasRoleAdmin = true;
 
-        delegateExecution.setVariable("hasRoleUnauthorized", hasRoleUnauthorized);
         delegateExecution.setVariable("hasRoleUser", hasRoleUser);
         delegateExecution.setVariable("hasRoleAdmin", hasRoleAdmin);
-        System.out.println(hasRoleUnauthorized);
     }
 }
