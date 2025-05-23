@@ -8,6 +8,7 @@ import itmo.blps.service.AdminService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class AdminController {
     private final SecurityUtils securityUtils;
 
     @GetMapping("/requests")
+    @PreAuthorize("hasAuthority('VIEW_ADMIN_REQUESTS')")
     public List<AdminResponse> getAllAdminRequests() {
         String username = securityUtils.getCurrentUser();
         if (username == null) {
@@ -29,6 +31,7 @@ public class AdminController {
     }
 
     @PostMapping("/create-request")
+    @PreAuthorize("hasAuthority('CREATE_ADMIN_REQUEST')")
     public void createAdminRequest(HttpServletRequest request) {
         String username = securityUtils.getCurrentUser();
         if (username == null) {
@@ -38,6 +41,7 @@ public class AdminController {
     }
 
     @PutMapping("/approve/{adminRequestId}")
+    @PreAuthorize("hasAuthority('APPROVE_ADMIN_REQUEST')")
     public void approveOnAdminRequest(@PathVariable @Valid String adminRequestId) {
         String username = securityUtils.getCurrentUser();
         if (username == null) {

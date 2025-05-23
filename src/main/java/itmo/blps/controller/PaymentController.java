@@ -6,6 +6,7 @@ import itmo.blps.exceptions.UserNotAuthorizedException;
 import itmo.blps.security.SecurityUtils;
 import itmo.blps.service.PaymentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ public class PaymentController {
     private final SecurityUtils securityUtils;
 
     @PostMapping("/pay")
+    @PreAuthorize("hasAuthority('PAY_ORDER')")
     public PaymentResponse payOrder(@RequestBody(required = false) CardRequest cardRequest) {
         String username = securityUtils.getCurrentUser();
         if (username == null) {

@@ -8,6 +8,7 @@ import itmo.blps.security.SecurityUtils;
 import itmo.blps.service.CardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ public class CardController {
     private final SecurityUtils securityUtils;
 
     @PostMapping("/create-card")
+    @PreAuthorize("hasAuthority('CREATE_CARD')")
     public CardResponse createCard(@RequestBody @Valid CardRequest cardRequest) {
         String username = securityUtils.getCurrentUser();
         if (username == null) {
@@ -30,6 +32,7 @@ public class CardController {
     }
 
     @PostMapping("/top-up")
+    @PreAuthorize("hasAuthority('TOP_UP_BALANCE')")
     public CardResponse topUpBalance(@RequestBody @Valid BalanceRequest balanceRequest) {
         String username = securityUtils.getCurrentUser();
         if (username == null) {

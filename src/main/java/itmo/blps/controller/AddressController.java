@@ -7,6 +7,7 @@ import itmo.blps.security.SecurityUtils;
 import itmo.blps.service.AddressService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class AddressController {
     private final SecurityUtils securityUtils;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('VIEW_ALL_ADDRESSES')")
     public List<AddressResponse> getAllAddresses() {
         String username = securityUtils.getCurrentUser();
         if (username == null) {
@@ -28,6 +30,7 @@ public class AddressController {
     }
 
     @GetMapping("/get-user-addresses")
+    @PreAuthorize("hasAuthority('VIEW_CURRENT_ADDRESSES')")
     public List<AddressResponse> getAllUserAddresses() {
         String username = securityUtils.getCurrentUser();
         if (username == null) {

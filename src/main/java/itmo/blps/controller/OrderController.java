@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,6 +50,7 @@ public class OrderController {
     }
 
     @PostMapping("/confirm")
+    @PreAuthorize("hasAuthority('CONFIRM_ORDER')")
     public OrderConfirmationResponse confirmOrder(HttpSession httpSession, @RequestBody @Valid ConfirmOrderRequest confirmOrderRequest) {
         String username = securityUtils.getCurrentUser();
         if (username == null) {
@@ -70,6 +72,7 @@ public class OrderController {
     }
 
     @GetMapping("/get-paid-orders")
+    @PreAuthorize("hasAuthority('VIEW_ALL_PAID_ORDERS')")
     public List<OrderResponse> getPaidOrders() {
         String username = securityUtils.getCurrentUser();
         if (username == null) {
@@ -79,6 +82,7 @@ public class OrderController {
     }
 
     @GetMapping("/get-confirmed-orders")
+    @PreAuthorize("hasAuthority('VIEW_ALL_CONFIRMED_ORDERS')")
     public List<OrderResponse> getConfirmedOrders() {
         String username = securityUtils.getCurrentUser();
         if (username == null) {
