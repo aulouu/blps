@@ -2,11 +2,9 @@ package itmo.blps.security;
 
 import blps.jca.bitrix24_adapter.Bitrix24ConnectionFactory;
 import blps.jca.bitrix24_adapter.Bitrix24ManagedConnectionFactory;
-import itmo.blps.exceptions.CustomAccessDeniedHandler;
 import itmo.blps.repository.UserRepository;
 import itmo.blps.security.jaas.JaasAuthorityGranter;
 import itmo.blps.security.jaas.JaasLoginModule;
-import itmo.blps.security.jwt.JwtAuthEntryPoint;
 import itmo.blps.security.jwt.JwtAuthTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -44,7 +42,7 @@ public class SecurityConfig {
     private String defaultWebhookUrl;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, CustomAccessDeniedHandler customAccessDeniedHandler) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, CustomAccessDeniedHandler customAccessDeniedHandler, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -63,7 +61,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(new JwtAuthEntryPoint())
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
                         .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .addFilterBefore(jwtAuthTokenFilter, UsernamePasswordAuthenticationFilter.class);

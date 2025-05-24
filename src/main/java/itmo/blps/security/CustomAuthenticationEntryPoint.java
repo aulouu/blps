@@ -1,4 +1,4 @@
-package itmo.blps.security.jwt;
+package itmo.blps.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Component
-public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
+public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
@@ -29,9 +29,4 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
 
         response.getWriter().write(new ObjectMapper().writeValueAsString(errorDetails));
     }
-
-//    @Override
-//    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
-//        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//    }
 }
