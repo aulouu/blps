@@ -200,32 +200,18 @@
             <artifactId>camunda-bpm-spring-boot-starter-webapp</artifactId>
             <version>7.23.0</version>
         </dependency>
-        <!--        <dependency>-->
-<!--            <groupId>org.camunda.bpm</groupId>-->
-<!--            <artifactId>camunda-engine-plugin-spin</artifactId>-->
-<!--            <version>7.22.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.camunda.spin</groupId>-->
-<!--            <artifactId>camunda-spin-dataformat-all</artifactId>-->
-<!--            <version>1.23.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.groovy</groupId>-->
-<!--            <artifactId>groovy-jsr223</artifactId>-->
-<!--            <scope>runtime</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.camunda.bpm</groupId>-->
-<!--            <artifactId>camunda-external-task-client</artifactId>-->
-<!--            <version>7.22.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.camunda.bpm.springboot</groupId>-->
-<!--            <artifactId>camunda-bpm-spring-boot-starter-rest</artifactId>-->
-<!--            <version>7.22.0</version>-->
-<!--        </dependency>-->
-
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
