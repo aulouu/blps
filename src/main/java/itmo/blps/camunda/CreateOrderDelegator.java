@@ -60,7 +60,8 @@ public class CreateOrderDelegator implements JavaDelegate {
             Integer flat = ((Long) execution.getVariable("flat")).intValue();
             Integer floor = ((Long) execution.getVariable("floor")).intValue();
 
-            if (city == null || street == null || building == null || entrance == null || flat == null || floor == null) {
+
+            if (city == null || street == null) {
                 throw new BpmnError("MISSING_ADDRESS_INFO", "Some address fields missing");
             }
 

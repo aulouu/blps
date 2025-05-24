@@ -50,9 +50,9 @@ public class TopUpBalanceDelegator implements JavaDelegate {
             }
 
             String number = (String) execution.getVariable("card_number");
-            Double money = (Double) execution.getVariable("card_money");
+            Double money = ((Long) execution.getVariable("card_money")).doubleValue();
 
-            if (number == null || money == null) {
+            if (number == null) {
                 throw new BpmnError("MISSING_TOP_UP_BALANCE_INFO", "Some 'top up balance' fields missing");
             }
 

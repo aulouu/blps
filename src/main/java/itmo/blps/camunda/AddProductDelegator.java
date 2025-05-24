@@ -50,9 +50,9 @@ public class AddProductDelegator implements JavaDelegate {
             }
 
             Long productId = (Long) execution.getVariable("product_id");
-            Double productCount = (Double) execution.getVariable("product_count");
+            Double productCount = ((Long) execution.getVariable("product_count")).doubleValue();
 
-            if (productId == null || productCount == null) {
+            if (productId == null) {
                 throw new BpmnError("MISSING_PRODUCT_INFO", "Some product fields missing");
             }
 

@@ -50,7 +50,7 @@ public class ConfirmOrderDelegator implements JavaDelegate {
             }
 
             String deliveryTime = (String) execution.getVariable("delivery_time");
-            Integer utensilsCount = (Integer) execution.getVariable("utensils_count");
+            Integer utensilsCount = ((Long) execution.getVariable("utensils_count")).intValue();
 
             if (deliveryTime == null || utensilsCount == null) {
                 throw new BpmnError("MISSING_DELIVERY_INFO", "Some delivery fields missing");
