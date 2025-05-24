@@ -12,6 +12,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 @RequiredArgsConstructor
 public class OrderGetter implements JavaDelegate {
@@ -22,23 +25,27 @@ public class OrderGetter implements JavaDelegate {
     public void execute(DelegateExecution execution) throws Exception {
         try {
             String username = (String) execution.getVariable("username");
-
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new BpmnError("USER_NOT_FOUND", "User details not found for token."));
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    user,
-                    null,
-                    user.getAuthorities()
-            );
+            String roleName = user.getRole().toString();
+            List<String> actualPermissions = user.getRole().getPermissions().stream()
+                    .map(Enum::name)
+                    .collect(Collectors.toList());
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            boolean hasRequiredRole = user.getAuthorities().stream()
-                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("VIEW_CURRENT_ORDER"));
+            boolean hasRequiredRole = user.getRole().getPermissions().stream()
+                    .map(Enum::name)
+                    .peek(permission -> System.out.println("Checking permission: " + permission))
+                    .anyMatch("VIEW_CURRENT_ORDER"::equals);
 
             if (!hasRequiredRole) {
-                throw new BpmnError("NO_REQUIRED_ROLE", "User does not have required role to create order.");
+                String errorMsg = String.format(
+                        "User '%s' with role '%s' lacks required permission. Have: %s, need: VIEW_CURRENT_ORDER",
+                        user.getUsername(),
+                        roleName,
+                        actualPermissions
+                );
+                throw new BpmnError("NO_REQUIRED_ROLE", errorMsg);
             }
 
             OrderResponse order = orderService.getCurrentOrder("", username);

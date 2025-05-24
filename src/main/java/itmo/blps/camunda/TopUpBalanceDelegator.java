@@ -13,6 +13,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 @RequiredArgsConstructor
 public class TopUpBalanceDelegator implements JavaDelegate {
@@ -23,23 +26,27 @@ public class TopUpBalanceDelegator implements JavaDelegate {
     public void execute(DelegateExecution execution) throws Exception {
         try {
             String username = (String) execution.getVariable("username");
-
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new BpmnError("USER_NOT_FOUND", "User details not found for token."));
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    user,
-                    null,
-                    user.getAuthorities()
-            );
+            String roleName = user.getRole().toString();
+            List<String> actualPermissions = user.getRole().getPermissions().stream()
+                    .map(Enum::name)
+                    .collect(Collectors.toList());
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            boolean hasRequiredRole = user.getAuthorities().stream()
-                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("TOP_UP_BALANCE"));
+            boolean hasRequiredRole = user.getRole().getPermissions().stream()
+                    .map(Enum::name)
+                    .peek(permission -> System.out.println("Checking permission: " + permission))
+                    .anyMatch("TOP_UP_BALANCE"::equals);
 
             if (!hasRequiredRole) {
-                throw new BpmnError("NO_REQUIRED_ROLE", "User does not have required role to top up balance.");
+                String errorMsg = String.format(
+                        "User '%s' with role '%s' lacks required permission. Have: %s, need: TOP_UP_BALANCE",
+                        user.getUsername(),
+                        roleName,
+                        actualPermissions
+                );
+                throw new BpmnError("NO_REQUIRED_ROLE", errorMsg);
             }
 
             String number = (String) execution.getVariable("card_number");

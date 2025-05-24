@@ -82,7 +82,6 @@ public class TransactionConfig {
         return transactionManager;
     }
 
-
 //    @Bean(name = "camundaDataSource")
 //    public DataSource camundaDataSource() {
 //        PGXADataSource pgxaDataSource = new PGXADataSource();
@@ -107,6 +106,4 @@ public class TransactionConfig {
         ds.setMaximumPoolSize(10);
         return ds;
     }
-
-
 }

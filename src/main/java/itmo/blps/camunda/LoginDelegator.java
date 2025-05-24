@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 public class LoginDelegator implements JavaDelegate {
     private final AuthService authService;
 
-
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
         var username = (String) delegateExecution.getVariable("username");

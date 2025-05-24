@@ -34,6 +34,7 @@ public class JwtChecker implements JavaDelegate {
                     return new BpmnError("user not found");
                 });
         delegateExecution.setVariable("username", user.getUsername());
+        System.out.println(user.getUsername());
 
         boolean hasRoleUser = false;
         boolean hasRoleAdmin = false;
