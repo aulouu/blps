@@ -5,10 +5,11 @@ import org.camunda.bpm.application.PostDeploy;
 import org.camunda.bpm.application.PreUndeploy;
 import org.camunda.bpm.application.ProcessApplication;
 import org.camunda.bpm.application.impl.JakartaServletProcessApplication;
+import org.camunda.bpm.application.impl.ServletProcessApplication;
 import org.camunda.bpm.engine.ProcessEngine;
 
-@ProcessApplication
-public class BlpsProcessApplication extends JakartaServletProcessApplication {
+@ProcessApplication("mainProcessBLPS")
+public class BlpsProcessApplication extends ServletProcessApplication {
     @PostDeploy
     public void startProcess(ProcessEngine processEngine) {
         BeanProvider.getBean(BeanProvider.class).setProcessEngine(processEngine);
