@@ -240,7 +240,7 @@
         <bpmn:errorEventDefinition id="ErrorEventDefinition_0ehreq4" />
       </bpmn:boundaryEvent>
     </bpmn:transaction>
-    <bpmn:userTask id="Activity_0pb6x1o" name="Вывод сообщения оплаты">
+    <bpmn:userTask id="Activity_0pb6x1o" name="Вывод сообщения оплаты" camunda:assignee="aulouu">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="payment_message" label="payment_message" type="string" defaultValue="${payment_message}" />
