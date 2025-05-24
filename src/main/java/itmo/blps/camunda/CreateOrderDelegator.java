@@ -40,7 +40,6 @@ public class CreateOrderDelegator implements JavaDelegate {
 
             boolean hasRequiredRole = user.getRole().getPermissions().stream()
                     .map(Enum::name)
-                    .peek(permission -> System.out.println("Checking permission: " + permission))
                     .anyMatch("SET_ADDRESS"::equals);
 
             if (!hasRequiredRole) {

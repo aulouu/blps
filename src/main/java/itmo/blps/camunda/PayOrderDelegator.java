@@ -36,7 +36,6 @@ public class PayOrderDelegator implements JavaDelegate {
 
             boolean hasRequiredRole = user.getRole().getPermissions().stream()
                     .map(Enum::name)
-                    .peek(permission -> System.out.println("Checking permission: " + permission))
                     .anyMatch("PAY_ORDER"::equals);
 
             if (!hasRequiredRole) {

@@ -36,7 +36,6 @@ public class AddProductDelegator implements JavaDelegate {
 
             boolean hasRequiredRole = user.getRole().getPermissions().stream()
                     .map(Enum::name)
-                    .peek(permission -> System.out.println("Checking permission: " + permission))
                     .anyMatch("ADD_PRODUCT"::equals);
 
             if (!hasRequiredRole) {

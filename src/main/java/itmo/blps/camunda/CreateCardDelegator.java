@@ -36,7 +36,6 @@ public class CreateCardDelegator implements JavaDelegate {
 
             boolean hasRequiredRole = user.getRole().getPermissions().stream()
                     .map(Enum::name)
-                    .peek(permission -> System.out.println("Checking permission: " + permission))
                     .anyMatch("CREATE_CARD"::equals);
 
             if (!hasRequiredRole) {

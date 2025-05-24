@@ -36,7 +36,6 @@ public class TopUpBalanceDelegator implements JavaDelegate {
 
             boolean hasRequiredRole = user.getRole().getPermissions().stream()
                     .map(Enum::name)
-                    .peek(permission -> System.out.println("Checking permission: " + permission))
                     .anyMatch("TOP_UP_BALANCE"::equals);
 
             if (!hasRequiredRole) {
