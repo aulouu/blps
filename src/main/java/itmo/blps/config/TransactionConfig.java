@@ -2,6 +2,7 @@ package itmo.blps.config;
 
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.engine.transaction.jta.platform.internal.AtomikosJtaPlatform;
 import org.postgresql.xa.PGXADataSource;
@@ -82,19 +83,30 @@ public class TransactionConfig {
     }
 
 
+//    @Bean(name = "camundaDataSource")
+//    public DataSource camundaDataSource() {
+//        PGXADataSource pgxaDataSource = new PGXADataSource();
+//        pgxaDataSource.setUrl(environment.getProperty("spring.jta.atomikos.datasource.orders-xa-ds.xa-properties.url"));
+//        pgxaDataSource.setUser(environment.getProperty("spring.jta.atomikos.datasource.orders-xa-ds.xa-properties.user"));
+//        pgxaDataSource.setPassword(environment.getProperty("spring.jta.atomikos.datasource.orders-xa-ds.xa-properties.password"));
+//
+//        AtomikosDataSourceBean atomikosDataSource = new AtomikosDataSourceBean();
+//        atomikosDataSource.setXaDataSource(pgxaDataSource);
+//        atomikosDataSource.setUniqueResourceName("camundaXADS"); // Уникальное имя для Camunda
+//        atomikosDataSource.setMinPoolSize(5);
+//        atomikosDataSource.setMaxPoolSize(20);
+//        return atomikosDataSource;
+//    }
+
     @Bean(name = "camundaDataSource")
     public DataSource camundaDataSource() {
-        PGXADataSource pgxaDataSource = new PGXADataSource();
-        pgxaDataSource.setUrl(environment.getProperty("spring.jta.atomikos.datasource.orders-xa-ds.xa-properties.url"));
-        pgxaDataSource.setUser(environment.getProperty("spring.jta.atomikos.datasource.orders-xa-ds.xa-properties.user"));
-        pgxaDataSource.setPassword(environment.getProperty("spring.jta.atomikos.datasource.orders-xa-ds.xa-properties.password"));
-
-        AtomikosDataSourceBean atomikosDataSource = new AtomikosDataSourceBean();
-        atomikosDataSource.setXaDataSource(pgxaDataSource);
-        atomikosDataSource.setUniqueResourceName("camundaXADS"); // Уникальное имя для Camunda
-        atomikosDataSource.setMinPoolSize(5);
-        atomikosDataSource.setMaxPoolSize(20);
-        return atomikosDataSource;
+        HikariDataSource ds = new HikariDataSource();
+        ds.setJdbcUrl(environment.getProperty("spring.datasource.url"));
+        ds.setUsername(environment.getProperty("spring.datasource.username"));
+        ds.setPassword(environment.getProperty("spring.datasource.password"));
+        ds.setMaximumPoolSize(10);
+        return ds;
     }
+
 
 }
