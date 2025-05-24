@@ -66,7 +66,7 @@ public class CardService {
 
     public CardResponse createCard(CardRequest cardRequest, String username) {
         try {
-            transactionManager.begin();
+//            transactionManager.begin();
             validateCardRequest(cardRequest);
             if (cardRepository.existsByNumber(cardRequest.getNumber())) {
                 throw new CardAlreadyExistsException("Card already exists. Check card number");
@@ -119,23 +119,23 @@ public class CardService {
                 throw new FailTransactionException("Bank rejected card creation");
             }
 
-            transactionManager.commit();
+//            transactionManager.commit();
             return modelMapper.map(savedCard, CardResponse.class);
         } catch (CardAlreadyExistsException e) {
             log.error("Card already exists: {}", e.getMessage());
-            try {
-                transactionManager.rollback();
-            } catch (SystemException ex) {
-                log.error("Failed to rollback transaction: {}", ex.getMessage());
-                throw new FailTransactionException(String.format("Failed to rollback transaction: %s", ex.getMessage()));
-            }
+//            try {
+//                transactionManager.rollback();
+//            } catch (SystemException ex) {
+//                log.error("Failed to rollback transaction: {}", ex.getMessage());
+//                throw new FailTransactionException(String.format("Failed to rollback transaction: %s", ex.getMessage()));
+//            }
             throw e;
         } catch (Exception e) {
-            try {
-                transactionManager.rollback();
-            } catch (SystemException ex) {
-                throw new FailTransactionException(String.format("Failed to rollback transaction: %s", ex.getMessage()));
-            }
+//            try {
+//                transactionManager.rollback();
+//            } catch (SystemException ex) {
+//                throw new FailTransactionException(String.format("Failed to rollback transaction: %s", ex.getMessage()));
+//            }
             throw new FailTransactionException(String.format("Transaction failed: %s", e.getMessage()));
         }
     }
@@ -166,7 +166,7 @@ public class CardService {
 
     public CardResponse topUpBalance(BalanceRequest balanceRequest, String username) {
         try {
-            transactionManager.begin();
+//            transactionManager.begin();
             if (balanceRequest.getMoney() <= 0) {
                 throw new NotValidInputException("Money must be positive");
             }
@@ -184,14 +184,14 @@ public class CardService {
             }
             card.setMoney(card.getMoney() + balanceRequest.getMoney());
             Card updatedCard = cardRepository.save(card);
-            transactionManager.commit();
+//            transactionManager.commit();
             return modelMapper.map(updatedCard, CardResponse.class);
         } catch (Exception e) {
-            try {
-                transactionManager.rollback();
-            } catch (SystemException ex) {
-                throw new FailTransactionException(String.format("Failed to rollback transaction: %s", ex.getMessage()));
-            }
+//            try {
+//                transactionManager.rollback();
+//            } catch (SystemException ex) {
+//                throw new FailTransactionException(String.format("Failed to rollback transaction: %s", ex.getMessage()));
+//            }
             throw new FailTransactionException(String.format("Transaction failed: %s", e.getMessage()));
         }
     }

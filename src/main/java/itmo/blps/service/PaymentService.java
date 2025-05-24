@@ -59,7 +59,7 @@ public class PaymentService {
             throw new NotValidInputException("Card has expired");
         }
         Card card;
-        Optional<Card> cardOptional = cardRepository.findFirstByUserOrderByIdDesc(user);
+        Optional<Card> cardOptional = cardRepository.findFirstByUserAndNumberOrderByIdDesc(user, cardRequest.getNumber());
 
         if (cardOptional.isEmpty()) {
             CardResponse cardResponse = cardService.createCard(cardRequest, username);
@@ -133,7 +133,7 @@ public class PaymentService {
             throw new NotValidInputException("Card has expired");
         }
         Card card;
-        Optional<Card> cardOptional = cardRepository.findFirstByUserOrderByIdDesc(user);
+        Optional<Card> cardOptional = cardRepository.findFirstByUserAndNumberOrderByIdDesc(user, cardRequest.getNumber());
 
         if (cardOptional.isEmpty()) {
             CardResponse cardResponse = cardService.createCard(cardRequest, username);

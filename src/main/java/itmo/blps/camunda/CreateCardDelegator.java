@@ -65,7 +65,7 @@ public class CreateCardDelegator implements JavaDelegate {
             execution.setVariable("card_id", savedCard.getId());
             execution.setVariable("card_number", savedCard.getNumber());
             execution.setVariable("card_expiration", savedCard.getExpiration());
-            execution.setVariable("card_money", savedCard.getMoney());
+            execution.setVariable("card_money", savedCard.getMoney().longValue());
 
             Double orderCost = (Double) execution.getVariable("order_cost");
             Boolean enoughMoney = savedCard.getMoney() >= orderCost;

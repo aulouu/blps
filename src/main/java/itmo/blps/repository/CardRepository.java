@@ -13,5 +13,5 @@ public interface CardRepository extends JpaRepository<Card, Long> {
 
     Optional<Card> findByNumberAndUser(String number, User user);
 
-    Optional<Card> findFirstByUserOrderByIdDesc(User user);
+    Optional<Card> findFirstByUserAndNumberOrderByIdDesc(User user, String number);
 }
