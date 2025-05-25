@@ -47,6 +47,12 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleNoRequiredRoleException(NoRequiredRoleException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleOrderNotFoundException(OrderNotFoundException e) {
         return new ErrorResponse(e.getMessage());

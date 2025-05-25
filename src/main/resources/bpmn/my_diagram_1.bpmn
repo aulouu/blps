@@ -3,7 +3,7 @@
   <bpmn:collaboration id="Collaboration_1x7hcjn">
     <bpmn:participant id="Participant_1jtp5p5" processRef="Process_06turyc" />
   </bpmn:collaboration>
-  <bpmn:process id="Process_06turyc" name="myProcess" isExecutable="true" camunda:historyTimeToLive="1">
+  <bpmn:process id="Process_06turyc" name="myProcess" isExecutable="true" camunda:candidateStarterGroups="user" camunda:historyTimeToLive="1">
     <bpmn:laneSet id="LaneSet_0isfowo">
       <bpmn:lane id="Lane_02ejo4s" name="bank">
         <bpmn:flowNodeRef>Activity_1ilku0r</bpmn:flowNodeRef>
@@ -47,7 +47,7 @@
     <bpmn:dataStoreReference id="DataStoreReference_1b97xos" name="Карты" />
     <bpmn:dataStoreReference id="DataStoreReference_1mw6smf" name="Карты" />
     <bpmn:dataStoreReference id="DataStoreReference_1r1c3ik" name="Заказы" />
-    <bpmn:userTask id="Activity_0n7uf6m" name="Заполнить форму с адресом" camunda:assignee="aulouu">
+    <bpmn:userTask id="Activity_0n7uf6m" name="Заполнить форму с адресом" camunda:assignee="user">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="street" label="street" type="string" defaultValue="street">
@@ -59,6 +59,7 @@
           <camunda:formField id="floor" label="floor" type="long" defaultValue="1" />
           <camunda:formField id="entrance" label="entrance" type="long" defaultValue="1" />
         </camunda:formData>
+        <camunda:candidateUsers>aulouu,user</camunda:candidateUsers>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_11ae7up</bpmn:incoming>
       <bpmn:outgoing>Flow_1kprbum</bpmn:outgoing>
@@ -73,7 +74,7 @@
         <bpmn:targetRef>DataStoreReference_18pe905</bpmn:targetRef>
       </bpmn:dataOutputAssociation>
     </bpmn:serviceTask>
-    <bpmn:userTask id="Activity_1o962v6" name="Заполнить форму добавления продукта" camunda:assignee="aulouu">
+    <bpmn:userTask id="Activity_1o962v6" name="Заполнить форму добавления продукта" camunda:assignee="user">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="product_id" label="product_id" type="long" defaultValue="10" />
@@ -83,7 +84,7 @@
       <bpmn:incoming>Flow_0kqjjmn</bpmn:incoming>
       <bpmn:outgoing>Flow_022n1ed</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:userTask id="Activity_01wplcs" name="Заполнить форму подтверждения заказа" camunda:assignee="aulouu">
+    <bpmn:userTask id="Activity_01wplcs" name="Заполнить форму подтверждения заказа" camunda:assignee="user">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="delivery_time" label="delivery_time" type="string" defaultValue="06.06 22:22" />
@@ -96,8 +97,8 @@
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:extensionElements>
         <camunda:formData>
-          <camunda:formField id="username" label="username" type="string" defaultValue="string" />
-          <camunda:formField id="password" label="password" type="string" defaultValue="string" />
+          <camunda:formField id="username" label="username" type="string" defaultValue="kirill" />
+          <camunda:formField id="password" label="password" type="string" defaultValue="kirill" />
         </camunda:formData>
       </bpmn:extensionElements>
       <bpmn:outgoing>Flow_028x7ve</bpmn:outgoing>
@@ -114,7 +115,7 @@
       <bpmn:outgoing>Flow_0qtti0b</bpmn:outgoing>
       <bpmn:outgoing>Flow_1hqgd8k</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:userTask id="Activity_02e15z7" name="Заполнить пополнение баланса" camunda:assignee="aulouu">
+    <bpmn:userTask id="Activity_02e15z7" name="Заполнить пополнение баланса" camunda:assignee="user">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="card_number" label="card_number" type="string" defaultValue="${card_number}" />
@@ -240,7 +241,7 @@
         <bpmn:errorEventDefinition id="ErrorEventDefinition_0ehreq4" />
       </bpmn:boundaryEvent>
     </bpmn:transaction>
-    <bpmn:userTask id="Activity_0pb6x1o" name="Вывод сообщения оплаты" camunda:assignee="aulouu">
+    <bpmn:userTask id="Activity_0pb6x1o" name="Вывод сообщения оплаты" camunda:assignee="user">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="payment_message" label="payment_message" type="string" defaultValue="${payment_message}" />
@@ -250,7 +251,7 @@
       <bpmn:outgoing>Flow_0s4jba8</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="Flow_0s4jba8" sourceRef="Activity_0pb6x1o" targetRef="Event_1pvh9gc" />
-    <bpmn:userTask id="Activity_1sdkwqp" name="Заполнение формы оплаты" camunda:assignee="aulouu">
+    <bpmn:userTask id="Activity_1sdkwqp" name="Заполнение формы оплаты" camunda:assignee="user">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="card_number" label="card_number" type="string" defaultValue="${card_number}" />
@@ -293,7 +294,7 @@
     <bpmn:boundaryEvent id="Event_0r4kj0l" attachedToRef="Activity_19p966a">
       <bpmn:errorEventDefinition id="ErrorEventDefinition_02h4ctf" />
     </bpmn:boundaryEvent>
-    <bpmn:userTask id="Activity_1q553eg" name="Заполнить форму оплаты" camunda:assignee="aulouu">
+    <bpmn:userTask id="Activity_1q553eg" name="Заполнить форму оплаты" camunda:assignee="user">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="card_number" label="card_number" type="string" defaultValue="1234567812345678" />

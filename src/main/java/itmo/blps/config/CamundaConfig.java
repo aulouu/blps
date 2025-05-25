@@ -1,7 +1,5 @@
 package itmo.blps.config;
 
-import javax.sql.DataSource;
-
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.spring.ProcessEngineFactoryBean;
@@ -9,6 +7,8 @@ import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.jta.JtaTransactionManager;
+
+import javax.sql.DataSource;
 
 @Configuration
 @RequiredArgsConstructor

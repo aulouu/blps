@@ -11,17 +11,16 @@ import org.springframework.context.annotation.Lazy;
 public class BeanProvider {
     @Setter
     private static ApplicationContext applicationContext;
-
-    public static <T> T getBean(Class<T> clazz) {
-        return applicationContext.getBean(clazz);
-    }
+    @Setter
+    private ProcessEngine processEngine = null;
 
     public BeanProvider(ApplicationContext applicationContext) {
         setApplicationContext(applicationContext);
     }
 
-    @Setter
-    private ProcessEngine processEngine = null;
+    public static <T> T getBean(Class<T> clazz) {
+        return applicationContext.getBean(clazz);
+    }
 
     @Lazy
     @Bean

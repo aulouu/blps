@@ -2,18 +2,14 @@ package itmo.blps.camunda;
 
 import itmo.blps.dto.request.AddressRequest;
 import itmo.blps.dto.response.OrderResponse;
-import itmo.blps.model.Permission;
 import itmo.blps.model.User;
 import itmo.blps.repository.UserRepository;
-import itmo.blps.security.jwt.JwtUtils;
 import itmo.blps.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -24,7 +20,6 @@ import java.util.stream.Collectors;
 public class CreateOrderDelegator implements JavaDelegate {
     private final OrderService orderService;
     private final UserRepository userRepository;
-    private final JwtUtils jwtUtils;
 
     @Override
     public void execute(DelegateExecution execution) throws Exception {
@@ -40,16 +35,19 @@ public class CreateOrderDelegator implements JavaDelegate {
 
             boolean hasRequiredRole = user.getRole().getPermissions().stream()
                     .map(Enum::name)
-                    .anyMatch("SET_ADDRESS"::equals);
+                    .peek(permission -> System.out.println("Checking permission: " + permission))
+                    .anyMatch("APPROVE_ADMIN_REQUEST"::equals);
 
             if (!hasRequiredRole) {
                 String errorMsg = String.format(
-                        "User '%s' with role '%s' lacks required permission. Have: %s, need: SET_ADDRESS",
+                        "User '%s' with role '%s' lacks required permission. Have: %s, need: APPROVE_ADMIN_REQUEST",
                         user.getUsername(),
                         roleName,
                         actualPermissions
                 );
+                System.err.println(errorMsg);
                 throw new BpmnError("NO_REQUIRED_ROLE", errorMsg);
+//                throw new NoRequiredRoleException(errorMsg);
             }
 
             String city = (String) execution.getVariable("city");

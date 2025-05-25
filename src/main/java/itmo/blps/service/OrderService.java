@@ -15,10 +15,8 @@ import itmo.blps.repository.AddressRepository;
 import itmo.blps.repository.OrderRepository;
 import itmo.blps.repository.ProductRepository;
 import itmo.blps.repository.UserRepository;
-import jakarta.jms.Queue;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

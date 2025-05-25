@@ -12,7 +12,6 @@ import itmo.blps.repository.UserRepository;
 import jakarta.jms.Message;
 import jakarta.jms.MessageConsumer;
 import jakarta.jms.Queue;
-import jakarta.transaction.SystemException;
 import jakarta.transaction.TransactionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

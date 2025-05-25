@@ -16,12 +16,13 @@ public class LoginDelegator implements JavaDelegate {
     public void execute(DelegateExecution delegateExecution) throws Exception {
         var username = (String) delegateExecution.getVariable("username");
         var password = (String) delegateExecution.getVariable("password");
-        LoginUserDTO userDTO = new LoginUserDTO(username,password);
+        LoginUserDTO userDTO = new LoginUserDTO(username, password);
         try {
             var result = authService.login(userDTO, "");
             delegateExecution.setVariable("auth", true);
             delegateExecution.setVariable("token", result.getToken());
-        } catch (Exception e){
+            delegateExecution.setVariable("adminMessage", "Haha hihi");
+        } catch (Exception e) {
             delegateExecution.setVariable("auth", false);
         }
     }
